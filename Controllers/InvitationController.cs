@@ -87,4 +87,6 @@ public class InvitationController : ControllerBase
         return Ok(new { registrationLink });
     }
 
+    // TODO cancel/delete an invitation
+
 }

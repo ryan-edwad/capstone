@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Organization> Organizations { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
+    public DbSet<Location> Locations { get; set; } = null!;
     public DbSet<TimeEntry> TimeEntries { get; set; } = null!;
     public DbSet<Invitation> Invitations { get; set; } = null!;
 
@@ -30,8 +31,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasForeignKey(o => o.CreatedBy)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // Project has one organization, orgniazation has many projects
+        // Project has one organization, organization has many projects
         modelBuilder.Entity<Project>().HasOne(p => p.Organization).WithMany(o => o.Projects).HasForeignKey(p => p.OrganizationId).IsRequired();
+
+        // Location has one organization, organization has many locations
+        modelBuilder.Entity<Location>().HasOne(l => l.Organization).WithMany(o => o.Locations).HasForeignKey(l => l.OrganizationId).IsRequired();
 
         // Join table for projects/users
         modelBuilder.Entity<UserProject>().HasKey(up => new { up.UserId, up.ProjectId });

@@ -28,6 +28,7 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
             new Claim(JwtRegisteredClaimNames.Sub, user.Id ?? throw new ArgumentNullException(nameof(user.Id))),
             new Claim(JwtRegisteredClaimNames.Name, user.UserName ?? throw new ArgumentNullException(nameof(user.UserName))),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? throw new ArgumentNullException(nameof(user.Email))),
+            new Claim("OrganizationId", user.OrganizationId?.ToString() ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
