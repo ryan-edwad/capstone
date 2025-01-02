@@ -1,0 +1,6 @@
+@HourMap_HostAddress = http://localhost:5170
+
+GET {{HourMap_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
