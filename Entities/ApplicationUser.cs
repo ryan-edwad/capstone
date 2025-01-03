@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace HourMap.Entities;
 
@@ -17,7 +18,5 @@ public class ApplicationUser : IdentityUser
     // Foreign Key
     public int? OrganizationId { get; set; }
     public Organization Organization { get; set; } = null!;
-
-
 
 }

@@ -26,18 +26,18 @@ public class OrganizationController : ControllerBase
     {
         // Get the user's ID
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userName = User.FindFirstValue(ClaimTypes.Name);
         if (userId is null) return Unauthorized("Invalid user id");
 
         // Check if the user is already a manager of an organization and is not an admin
         var isAdmin = User.IsInRole("Admin");
-        var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.CreatedBy == userId);
-        if (organization != null || !isAdmin) return BadRequest("User is already a manager of an organization");
+        // var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.CreatedBy == userId);
+        // if (organization != null || !isAdmin) return BadRequest("User is already a manager of an organization");
 
         // Create a new organization
         var newOrganization = new Organization
         {
             Name = name,
-            CreatedBy = userId
         };
         await _context.Organizations.AddAsync(newOrganization);
 
@@ -52,7 +52,7 @@ public class OrganizationController : ControllerBase
         {
             Id = newOrganization.Id,
             Name = newOrganization.Name,
-            CreatedBy = newOrganization.CreatedBy,
+            // CreatedBy = newOrganization.CreatedBy,
             CreatedAt = newOrganization.CreatedAt.ToLocalTime()
         };
 
@@ -78,7 +78,7 @@ public class OrganizationController : ControllerBase
         {
             Id = organization.Id,
             Name = organization.Name,
-            CreatedBy = organization.CreatedBy is null ? "None" : organization.CreatedBy,
+            // CreatedBy = organization.CreatedBy is null ? "None" : organization.CreatedBy,
             CreatedAt = organization.CreatedAt.ToLocalTime()
         };
 
@@ -100,7 +100,7 @@ public class OrganizationController : ControllerBase
         if (user == null) return BadRequest(new { message = "User not authenticated" });
         var organizationManager = user.ManagesOrganization;
 
-        if (organization.CreatedBy != userId && !organizationManager || !isAdmin) return Unauthorized("Unauthorized to update this organization");
+        // if (organization.CreatedBy != userId && !organizationManager || !isAdmin) return Unauthorized("Unauthorized to update this organization");
 
         organization.Name = name;
         await _context.SaveChangesAsync();
@@ -109,7 +109,7 @@ public class OrganizationController : ControllerBase
         {
             Id = organization.Id,
             Name = organization.Name,
-            CreatedBy = organization.CreatedBy is null ? "None" : organization.CreatedBy,
+            // CreatedBy = organization.CreatedBy is null ? "None" : organization.CreatedBy,
             CreatedAt = organization.CreatedAt.ToLocalTime()
         };
 
@@ -131,7 +131,7 @@ public class OrganizationController : ControllerBase
         if (user == null) return BadRequest(new { message = "User not authenticated" });
         var organizationManager = user.ManagesOrganization;
 
-        if (organization.CreatedBy != userId && !organizationManager || !isAdmin) return Unauthorized("Unauthorized to delete this organization");
+        if (!organizationManager || !isAdmin) return Unauthorized("Unauthorized to delete this organization");
 
         _context.Organizations.Remove(organization);
         await _context.SaveChangesAsync();
@@ -148,7 +148,7 @@ public class OrganizationController : ControllerBase
         {
             Id = o.Id,
             Name = o.Name,
-            CreatedBy = o.CreatedBy ?? "None",
+            // CreatedBy = o.CreatedBy ?? "None",
             CreatedAt = o.CreatedAt.ToLocalTime()
         }).ToListAsync();
 

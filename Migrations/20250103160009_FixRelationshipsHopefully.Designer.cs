@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HourMap.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241231185942_MakeOrganizationIdNullable")]
-    partial class MakeOrganizationIdNullable
+    [Migration("20250103160009_FixRelationshipsHopefully")]
+    partial class FixRelationshipsHopefully
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,9 @@ namespace HourMap.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("ManagesOrganization")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
@@ -63,7 +66,6 @@ namespace HourMap.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("OrganizationId")
-                        .IsRequired()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PasswordHash")
@@ -135,6 +137,14 @@ namespace HourMap.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -146,11 +156,15 @@ namespace HourMap.Migrations
                     b.Property<int>("OrganizationId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Location");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("HourMap.Entities.Organization", b =>
@@ -158,6 +172,9 @@ namespace HourMap.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -171,6 +188,7 @@ namespace HourMap.Migrations
                         new
                         {
                             Id = 1,
+                            CreatedAt = new DateTime(2025, 1, 3, 16, 0, 9, 358, DateTimeKind.Utc).AddTicks(3990),
                             Name = "Default"
                         });
                 });
@@ -211,6 +229,9 @@ namespace HourMap.Migrations
                     b.Property<DateTime?>("ClockOut")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Duration")
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("LocationId")
                         .HasColumnType("INTEGER");
 
@@ -248,7 +269,7 @@ namespace HourMap.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("UserProject");
+                    b.ToTable("UserProjects");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -383,9 +404,7 @@ namespace HourMap.Migrations
                 {
                     b.HasOne("HourMap.Entities.Organization", "Organization")
                         .WithMany("Users")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrganizationId");
 
                     b.Navigation("Organization");
                 });

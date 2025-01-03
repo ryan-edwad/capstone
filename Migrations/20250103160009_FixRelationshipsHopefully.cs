@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HourMap.Migrations
 {
     /// <inheritdoc />
-    public partial class IntialCreate : Migration
+    public partial class FixRelationshipsHopefully : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,8 @@ namespace HourMap.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,9 +65,12 @@ namespace HourMap.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
-                    FullName = table.Column<string>(type: "TEXT", nullable: true),
-                    PayRate = table.Column<decimal>(type: "TEXT", nullable: false),
-                    OrganizationId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
+                    LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    JobTitle = table.Column<string>(type: "TEXT", nullable: true),
+                    PayRate = table.Column<decimal>(type: "TEXT", nullable: true),
+                    ManagesOrganization = table.Column<bool>(type: "INTEGER", nullable: false),
+                    OrganizationId = table.Column<int>(type: "INTEGER", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -89,25 +93,49 @@ namespace HourMap.Migrations
                         name: "FK_AspNetUsers_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invitations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    OrganizationId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Token = table.Column<string>(type: "TEXT", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Invitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Invitations_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Locations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Address = table.Column<string>(type: "TEXT", nullable: false),
+                    City = table.Column<string>(type: "TEXT", nullable: false),
+                    State = table.Column<string>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
                     OrganizationId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Location", x => x.Id);
+                    table.PrimaryKey("PK_Locations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Location_Organizations_OrganizationId",
+                        name: "FK_Locations_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
@@ -230,7 +258,8 @@ namespace HourMap.Migrations
                     ClockIn = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ClockOut = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ProjectId = table.Column<int>(type: "INTEGER", nullable: true),
-                    LocationId = table.Column<int>(type: "INTEGER", nullable: true)
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: true),
+                    Duration = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -244,7 +273,7 @@ namespace HourMap.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserProject",
+                name: "UserProjects",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
@@ -254,21 +283,21 @@ namespace HourMap.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProject", x => new { x.UserId, x.ProjectId });
+                    table.PrimaryKey("PK_UserProjects", x => new { x.UserId, x.ProjectId });
                     table.ForeignKey(
-                        name: "FK_UserProject_AspNetUsers_UserId",
+                        name: "FK_UserProjects_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProject_Organizations_OrganizationId",
+                        name: "FK_UserProjects_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserProject_Projects_ProjectId",
+                        name: "FK_UserProjects_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
@@ -277,8 +306,8 @@ namespace HourMap.Migrations
 
             migrationBuilder.InsertData(
                 table: "Organizations",
-                columns: new[] { "Id", "Name" },
-                values: new object[] { 1, "Default" });
+                columns: new[] { "Id", "CreatedAt", "Name" },
+                values: new object[] { 1, new DateTime(2025, 1, 3, 16, 0, 9, 358, DateTimeKind.Utc).AddTicks(3990), "Default" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -323,8 +352,13 @@ namespace HourMap.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Location_OrganizationId",
-                table: "Location",
+                name: "IX_Invitations_OrganizationId",
+                table: "Invitations",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Locations_OrganizationId",
+                table: "Locations",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
@@ -338,13 +372,13 @@ namespace HourMap.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProject_OrganizationId",
-                table: "UserProject",
+                name: "IX_UserProjects_OrganizationId",
+                table: "UserProjects",
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProject_ProjectId",
-                table: "UserProject",
+                name: "IX_UserProjects_ProjectId",
+                table: "UserProjects",
                 column: "ProjectId");
         }
 
@@ -367,13 +401,16 @@ namespace HourMap.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Invitations");
+
+            migrationBuilder.DropTable(
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "TimeEntries");
 
             migrationBuilder.DropTable(
-                name: "UserProject");
+                name: "UserProjects");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
