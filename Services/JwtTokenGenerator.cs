@@ -52,7 +52,7 @@ public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerato
             Issuer = _configuration["Jwt:Issuer"],
             Audience = _configuration["Jwt:Audience"],
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(1),
+            Expires = DateTime.UtcNow.AddHours(6),
             SigningCredentials = creds
         };
 

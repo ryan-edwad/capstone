@@ -26,11 +26,17 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            Console.WriteLine("Validation Errors: " + string.Join(", ", errors));
+            return BadRequest(ModelState);
+        }
 
         var user = new ApplicationUser
         {
-            UserName = registerUserDto.UserName,
+            UserName = registerUserDto.Email,
             Email = registerUserDto.Email,
             FirstName = registerUserDto.FirstName,
             LastName = registerUserDto.LastName
@@ -83,7 +89,7 @@ public class AuthController : ControllerBase
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var user = await _userManager.FindByNameAsync(loginUserDto.UserName);
+        var user = await _userManager.FindByNameAsync(loginUserDto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginUserDto.Password))
         {
             return Unauthorized(new { message = "Invalid username or password" });
@@ -92,7 +98,16 @@ public class AuthController : ControllerBase
 
         var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
-        return Ok(new { token });
+        var authResponse = new
+        {
+            token,
+            userId = user.Id,
+            email = user.Email,
+            organizationId = user.OrganizationId?.ToString(),
+            roles
+        };
+
+        return Ok(authResponse);
 
     }
 

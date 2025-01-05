@@ -1,10 +1,12 @@
-﻿namespace HourMap.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HourMap.Dtos;
 
 public class RegisterUserDto
 {
-    public required string UserName { get; set; }
-    public required string Password { get; set; }
+    [EmailAddress]
     public required string Email { get; set; }
+    public required string Password { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
 }
