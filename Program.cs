@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:61395") // Temporary CORS for testing
+        policy.WithOrigins("http://localhost:4200") // Temporary CORS for testing
               .AllowAnyHeader()
               .AllowAnyMethod();
     });

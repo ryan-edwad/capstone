@@ -27,7 +27,8 @@ export class AccountService {
         });
         this.isAuthenticatedSubject.next(true);
         if (!response.organizationId) {
-          this.router.navigate(['/new-org']);
+          console.log('Navigating to OrganizationService... NOT!');
+          this.router.navigate(['/create-organization']);
         } else {
           this.router.navigate(['/time-clock'])
         }

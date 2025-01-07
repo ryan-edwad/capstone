@@ -22,28 +22,31 @@ public class OrganizationController : ControllerBase
     // Create Organization, authorized by new Manager accounts only, who don't already belong to an organization, and by admins
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
-    public async Task<IActionResult> CreateOrganization(string name)
+    public async Task<IActionResult> CreateOrganization(CreateOrganizationDto createOrganizationDto)
     {
         // Get the user's ID
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userName = User.FindFirstValue(ClaimTypes.Name);
         if (userId is null) return Unauthorized("Invalid user id");
+
+        // Add the user to the organization as a manager
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return BadRequest(new { message = "User not found", userId });
 
         // Check if the user is already a manager of an organization and is not an admin
         var isAdmin = User.IsInRole("Admin");
+
         // var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.CreatedBy == userId);
         // if (organization != null || !isAdmin) return BadRequest("User is already a manager of an organization");
 
         // Create a new organization
         var newOrganization = new Organization
         {
-            Name = name,
+            Name = createOrganizationDto.Name,
         };
         await _context.Organizations.AddAsync(newOrganization);
+        await _context.SaveChangesAsync();
 
-        // Add the user to the organization as a manager
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return BadRequest(new { message = "User not found", userId });
+
         user.OrganizationId = newOrganization.Id;
         user.ManagesOrganization = true;
         await _context.SaveChangesAsync();
@@ -60,7 +63,7 @@ public class OrganizationController : ControllerBase
     }
 
     // Get Organization by ID, authorized for Admins, and Managers/Users with the same Organization ID
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<IActionResult> GetOrganization(int id)
     {
@@ -86,7 +89,7 @@ public class OrganizationController : ControllerBase
     }
 
     // Update Organization by ID, authorized by Admins and the manager who created the organization/ManageOrganization == true
-    [HttpPut("{id}")]
+    [HttpPut("update/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> UpdateOrganization(int id, string name)
     {
@@ -117,7 +120,7 @@ public class OrganizationController : ControllerBase
     }
 
     // Delete Organization by ID, authorized by Admins and the manager who created the Organization/ManageOrganization == true
-    [HttpDelete("{id}")]
+    [HttpDelete("delete/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> DeleteOrganization(int id)
     {
@@ -140,7 +143,7 @@ public class OrganizationController : ControllerBase
     }
 
     // Get all organizations, authorized by admins only
-    [HttpGet]
+    [HttpGet("list")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetOrganizations()
     {

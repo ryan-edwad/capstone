@@ -1,0 +1,39 @@
+<div class="d-flex vh-100 align-items-center justify-content-center">
+  <div class="card mx-auto" style="max-width: 400px; width: 100%">
+    <div class="card-body">
+      <h5 class="card-title text-center">Create Organization</h5>
+      <form [formGroup]="createOrgForm" (ngSubmit)="onSubmit()">
+        <div class="form-group mb-3">
+          <label for="name">Organization Name</label>
+          <input
+            id="name"
+            type="text"
+            class="form-control"
+            formControlName="name"
+            placeholder="Enter your organization name"
+            [class.is-invalid]="
+              createOrgForm.get('name')?.invalid &&
+              createOrgForm.get('name')?.touched
+            "
+          />
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              createOrgForm.get('name')?.invalid &&
+              createOrgForm.get('name')?.touched
+            "
+          >
+            Name must be at least 3 characters long.
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary btn-block"
+          [disabled]="createOrgForm.invalid"
+        >
+          Create Organization
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
