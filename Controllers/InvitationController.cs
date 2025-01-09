@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
@@ -19,6 +20,40 @@ public class InvitationController : ControllerBase
     {
         _context = context;
         _userManager = userManager;
+    }
+
+    [HttpGet("invitations")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
+    public async Task<IActionResult> GetInvitations()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized(new { message = "Invalid user." });
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "User not found." });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var isManager = roles.Contains("Manager");
+        var isAdmin = roles.Contains("Admin");
+
+        var invitations = await _context.Invitations
+            .Where(i => i.OrganizationId == user.OrganizationId)
+            .Select(i => new InvitationDto
+            {
+                Id = i.Id,
+                Email = i.Email,
+                OrganizationId = i.OrganizationId,
+                Token = i.Token,
+                ExpirationDate = i.ExpirationDate
+            }).ToListAsync();
+
+        return Ok(invitations);
     }
 
     [HttpPost("invite")]
@@ -47,6 +82,18 @@ public class InvitationController : ControllerBase
         }
 
         var token = Guid.NewGuid().ToString();
+
+        var userExists = await _userManager.FindByEmailAsync(inviteUserDto.Email);
+        if (userExists != null)
+        {
+            return BadRequest(new { message = "User already exists." });
+        }
+
+        var invitationExists = await _context.Invitations.AnyAsync(i => i.Email == inviteUserDto.Email && i.OrganizationId == inviteUserDto.OrganizationId);
+        if (invitationExists)
+        {
+            return BadRequest(new { message = "Invitation already exists.", invitationExists });
+        }
 
         var invitation = new Invitation
         {
@@ -88,5 +135,41 @@ public class InvitationController : ControllerBase
     }
 
     // TODO cancel/delete an invitation
+    [HttpDelete("cancel/{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
+    public async Task<IActionResult> CancelInvitation(int id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+        {
+            return Unauthorized(new { message = "Invalid user." });
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "User not found." });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var isManager = roles.Contains("Manager");
+        var isAdmin = roles.Contains("Admin");
+
+        var invitation = await _context.Invitations.FindAsync(id);
+        if (invitation == null)
+        {
+            return NotFound(new { message = "Invitation not found." });
+        }
+
+        if (isManager && !isAdmin && user.OrganizationId != invitation.OrganizationId)
+        {
+            return Forbid("Managers can only cancel invitations from their own organization.");
+        }
+
+        _context.Invitations.Remove(invitation);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Invitation canceled." });
+    }
 
 }

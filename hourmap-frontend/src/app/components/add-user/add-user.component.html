@@ -1,0 +1,67 @@
+<div class="modal-header justify-content-between">
+  <h4 class="modal-title mt-3">Add User</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="addUserForm" (ngSubmit)="submit()">
+    <div class="form-group mb-3">
+      <p>
+        Enter the user's email address and click <b>Generate Invitation</b> to
+        generate a link!
+      </p>
+      <label for="email">User Email</label>
+      <input
+        id="email"
+        type="email"
+        class="form-control"
+        formControlName="email"
+        placeholder="Enter user's email"
+      />
+      <div
+        *ngIf="
+          addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid email.
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mb-2"
+      [disabled]="addUserForm.invalid"
+    >
+      Generate Invitation
+    </button>
+  </form>
+  <div *ngIf="invitationLink" class="mt-3">
+    <label for="invitation">Registration Link:</label>
+    <input
+      id="invitation"
+      type="text"
+      class="form-control"
+      [value]="invitationLink"
+      readonly
+    />
+    <div class="modal-footer d-flex justify-content-between">
+      <div class="d-flex gap-2 mt-2">
+        <button class="btn btn-secondary w-50" (click)="copyLink()">
+          Copy Link
+        </button>
+        <a
+          [href]="
+            'mailto:' + addUserForm.value.email + '?body=' + invitationLink
+          "
+          class="btn btn-info w-50"
+        >
+          Send via Email
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

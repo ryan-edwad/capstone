@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { BehaviorSubject, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthResponse } from '../_models/auth-response';
+import { RegisterInviteUser } from '../_models/register-invite-user';
 
 @Injectable({
   providedIn: 'root'
@@ -27,10 +28,10 @@ export class AccountService {
         });
         this.isAuthenticatedSubject.next(true);
         if (!response.organizationId) {
-          console.log('Navigating to OrganizationService... NOT!');
+          console.log('Navigating to OrganizationService... ');
           this.router.navigate(['/create-organization']);
         } else {
-          this.router.navigate(['/time-clock'])
+          this.router.navigate(['/organization-dashboard']);
         }
       },
       error: (err) => {
@@ -54,6 +55,20 @@ export class AccountService {
       });
   }
 
+  registerWithToken(registerInviteUser: RegisterInviteUser) {
+    const url = `${this.baseUrl}register/invite/`;
+    return this.http
+      .post<{ message: string }>(url, registerInviteUser)
+      .subscribe({
+        next: (response) => {
+          console.log('Registration with token successful:', response);
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Registration with token error:', err);
+        }
+      });
+  }
 
   logout() {
     this.removeToken();

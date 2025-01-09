@@ -63,7 +63,8 @@
             [class.is-invalid]="
               authForm.get('email')?.invalid && authForm.get('email')?.touched
             "
-            placeholder="Enter your email"
+            [disabled]="!!token"
+            [placeholder]="token ? 'We know this already!' : 'Enter your email'"
           />
           <div
             class="invalid-feedback"

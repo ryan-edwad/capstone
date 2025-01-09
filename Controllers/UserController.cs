@@ -87,13 +87,13 @@ public class UserController : ControllerBase
     {
         var organizationClaim = User.FindFirst("OrganizationId")?.Value;
         if (string.IsNullOrEmpty(organizationClaim))
-            return Unauthorized("Access denied. OrganizationId is missing in the token.");
+            return Unauthorized(new { message = "Access denied. OrganizationId is missing in the token." });
         if (!int.TryParse(organizationClaim, out var organizationId))
-            return BadRequest("Invalid OrganizationId in token.");
+            return BadRequest(new { message = "Invalid OrganizationId in token." });
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id && u.OrganizationId == organizationId);
         if (user == null)
-            return NotFound("User not found in the organization.");
+            return NotFound(new { message = "User not found in the organization." });
 
         user.FirstName = userDto.FirstName;
         user.LastName = userDto.LastName;
@@ -103,7 +103,7 @@ public class UserController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok("User profile updated successfully.");
+        return Ok(new { message = "User profile updated successfully." });
     }
 
     // TODO: Edit a user profile as the user, some fields not enabled (cannot change pay rate or job title)

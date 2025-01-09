@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+.custom-dialog-container {
+  z-index: 1050 !important; /* Higher than most other elements */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.custom-backdrop {
+  z-index: 1049 !important;
+  background: rgba (0, 0, 0, 0.5) !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

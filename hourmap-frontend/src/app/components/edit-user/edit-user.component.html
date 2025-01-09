@@ -1,0 +1,121 @@
+<div class="modal-header justify-content-between">
+  <h4 class="modal-title mt-3">Edit User</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="editUserForm" (ngSubmit)="submit()">
+    <div class="form-group mb-3">
+      <label for="firstName">First Name</label>
+      <input
+        id="firstName"
+        type="text"
+        class="form-control"
+        formControlName="firstName"
+        placeholder="Enter first name"
+      />
+      <div
+        *ngIf="
+          editUserForm.get('firstName')?.invalid &&
+          editUserForm.get('firstName')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid first name.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="lastName">Last Name</label>
+      <input
+        id="lastName"
+        type="text"
+        class="form-control"
+        formControlName="lastName"
+        placeholder="Enter last name"
+      />
+      <div
+        *ngIf="
+          editUserForm.get('lastName')?.invalid &&
+          editUserForm.get('lastName')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid last name.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        class="form-control"
+        formControlName="email"
+        placeholder="Enter email address"
+      />
+      <div
+        *ngIf="
+          editUserForm.get('email')?.invalid &&
+          editUserForm.get('email')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid email address.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="jobTitle">Job Title</label>
+      <input
+        id="jobTitle"
+        type="text"
+        class="form-control"
+        formControlName="jobTitle"
+        placeholder="Enter job title"
+      />
+      <div
+        *ngIf="
+          editUserForm.get('jobTitle')?.invalid &&
+          editUserForm.get('jobTitle')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid job title.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="payRate">Pay Rate</label>
+      <input
+        id="payRate"
+        type="number"
+        class="form-control"
+        formControlName="payRate"
+        placeholder="Enter pay rate"
+        min="0"
+      />
+      <div
+        *ngIf="
+          editUserForm.get('payRate')?.invalid &&
+          editUserForm.get('payRate')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid pay rate.
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mb-2"
+      [disabled]="editUserForm.invalid"
+    >
+      Save Changes
+    </button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger w-100" (click)="close()">
+    Cancel
+  </button>
+</div>

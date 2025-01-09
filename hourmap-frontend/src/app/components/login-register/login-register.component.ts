@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
+import { RegisterInviteUser } from '../../_models/register-invite-user';
 
 @Component({
   selector: 'app-login-register',
@@ -16,6 +17,7 @@ import { AccountService } from '../../_services/account.service';
 export class LoginRegisterComponent {
   authForm: FormGroup;
   isLoginMode: boolean = true;
+  token: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -23,11 +25,11 @@ export class LoginRegisterComponent {
     private accountService: AccountService,
   ) {
     this.authForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: [{ value: '', disabled: false }, [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      confirmPassword: [''], // For use with registration?
-      firstName: [''], // For use with registration?
-      lastName: [''] // for use with registration?
+      confirmPassword: [''], // For use with registration
+      firstName: [''], // For use with registration
+      lastName: [''] // for use with registration
     });
 
 
@@ -36,6 +38,19 @@ export class LoginRegisterComponent {
       this.updateConfirmPasswordValidator();
       this.updateConfirmFirstLastNameValidator();
     });
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.token = params['token'] || null;
+      if (this.token) {
+        console.log('Invitation token! Welcome to the team!', this.token);
+        this.isLoginMode = false;
+        this.authForm.get('email')?.disable();
+        this.updateConfirmPasswordValidator();
+        this.updateConfirmFirstLastNameValidator();
+      }
+    })
   }
 
   updateConfirmPasswordValidator() {
@@ -66,17 +81,35 @@ export class LoginRegisterComponent {
   onSubmit() {
     if (this.authForm.invalid) return;
 
-    const { email, password, confirmPassword, lastName, firstName } = this.authForm.value;
-    if (!this.isLoginMode && password !== confirmPassword) {
-      alert('Passwords do not match!');
-      return;
+    const { password, confirmPassword, lastName, firstName } = this.authForm.value;
+
+    if (this.token) {
+      if (!this.isLoginMode && password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      const registerInviteUser: RegisterInviteUser = {
+        password,
+        firstName,
+        lastName,
+        token: this.token
+      };
+
+      this.accountService.registerWithToken(registerInviteUser);
+    }
+    else if (this.isLoginMode) {
+      const { email } = this.authForm.value;
+      this.accountService.login({ email, password });
+    }
+    else {
+      if (!this.isLoginMode && password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      const { email } = this.authForm.value;
+      this.accountService.register({ email, password, firstName, lastName });
     }
 
-    if (this.isLoginMode) {
-      this.accountService.login({ email, password });
-    } else {
-      this.accountService.register({ email, password, lastName, firstName });
-    }
 
   }
 }

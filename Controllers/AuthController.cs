@@ -56,6 +56,13 @@ public class AuthController : ControllerBase
     [HttpPost("register/invite")]
     public async Task<IActionResult> RegisterInvitedUser(RegisterInvitedUserDto registerInvitedUserDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            Console.WriteLine("Validation Errors: " + string.Join(", ", errors));
+            return BadRequest(ModelState);
+        }
+
         var invitation = await _context.Invitations.FirstOrDefaultAsync(i => i.Token == registerInvitedUserDto.Token);
         if (invitation == null || invitation.ExpirationDate < DateTime.UtcNow)
         {
@@ -64,7 +71,7 @@ public class AuthController : ControllerBase
 
         var user = new ApplicationUser
         {
-            UserName = registerInvitedUserDto.UserName,
+            UserName = invitation.Email,
             Email = invitation.Email,
             FirstName = registerInvitedUserDto.FirstName,
             LastName = registerInvitedUserDto.LastName,
