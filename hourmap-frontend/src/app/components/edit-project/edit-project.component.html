@@ -1,0 +1,74 @@
+<div class="modal-header justify-content-between">
+  <h4 class="modal-title mt-3">Edit Project</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="editProjectForm" (ngSubmit)="submit()">
+    <div class="form-group mb-3">
+      <label for="name">First Name</label>
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="My Project"
+      />
+      <div
+        *ngIf="
+          editProjectForm.get('name')?.invalid &&
+          editProjectForm.get('name')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid project name.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="lastName">Description</label>
+      <input
+        id="description"
+        type="text"
+        class="form-control"
+        formControlName="description"
+        placeholder="Enter project description"
+      />
+      <div
+        *ngIf="
+          editProjectForm.get('description')?.invalid &&
+          editProjectForm.get('description')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid project description.
+      </div>
+      <div class="form-check mt-4 mb-4">
+        <input
+          id="enabled"
+          type="checkbox"
+          class="form-check-input styled-checkbox"
+          formControlName="enabled"
+        />
+        <label class="form-check-label styled-label" for="enabled">
+          Enable Project
+        </label>
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mb-2"
+      [disabled]="editProjectForm.invalid"
+    >
+      Save Changes
+    </button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger w-100" (click)="close()">
+    Cancel
+  </button>
+</div>

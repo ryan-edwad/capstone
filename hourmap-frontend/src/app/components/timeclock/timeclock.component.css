@@ -1,0 +1,29 @@
+.live-clock {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.live-date {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.table-header,
+.form-header {
+  margin-bottom: 1rem;
+  color: #007bff;
+}
+
+.timeclock-container {
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .live-clock {
+    text-align: center;
+  }
+
+  .live-date {
+    text-align: center;
+  }
+}

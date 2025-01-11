@@ -1,10 +1,11 @@
 ﻿namespace HourMap.Dtos;
 
-public class ProjectDto
+public class CreateProjectDto
 {
-    public int Id { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
+    public int OrganizationId { get; set; }
     public bool Enabled { get; set; } = true;
+
 
 }

@@ -1,0 +1,43 @@
+.mat-dialog-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  max-width: 90%; /* Adjust for responsive design */
+  height: auto !important; /* Prevent stretching */
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 0rem 1rem 0rem 1.5rem;
+}
+
+.modal-body {
+  padding: 0.5rem 1.5rem;
+}
+
+.modal-footer {
+  padding: 0.75rem 1.5rem;
+}
+
+/* Make the checkbox larger */
+.styled-checkbox {
+  width: 24px;
+  height: 24px;
+  accent-color: #007bff;
+  cursor: pointer;
+}
+
+/* For browsers that don't support accent-color */
+.styled-checkbox:checked {
+  background-color: #007bff; /* Primary blue when checked */
+  border-color: #007bff;
+}
+
+/* Align the label with the checkbox */
+.styled-label {
+  margin-left: 8px;
+  margin-top: 6px;
+  font-size: 16px;
+  vertical-align: middle; /* Aligns the text vertically with the checkbox */
+}

@@ -9,6 +9,9 @@ import { OrgUser } from '../../_models/org-user';
 import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
 import { Invitation } from '../../_models/invitation';
+import { Project } from '../../_models/project';
+import { NewProjectComponent } from '../new-project/new-project.component';
+import { EditProjectComponent } from '../edit-project/edit-project.component';
 
 @Component({
   selector: 'app-organization-dashboard',
@@ -18,9 +21,10 @@ import { Invitation } from '../../_models/invitation';
   styleUrl: './organization-dashboard.component.css'
 })
 export class OrganizationDashboardComponent {
-  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [] };;
+  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [] };;
   selectedUser: OrgUser | null = null;
   selectedInvitation: Invitation | null = null;
+  selectedProject: Project | null = null;
   invitations: Invitation[] = [];
 
   constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog) { }
@@ -54,12 +58,14 @@ export class OrganizationDashboardComponent {
     this.getInvitations();
   }
 
+  // Get the organization data
   getOrganization(organizationId: number) {
     this.organizationService.getOrganization(organizationId).subscribe({
       next: (data) => {
         this.organization = {
           ...data,
-          users: data.users || []
+          users: data.users || [],
+          projects: data.projects || []
         },
           console.log('Loading organization:', this.organization);
       },
@@ -68,6 +74,7 @@ export class OrganizationDashboardComponent {
 
   }
 
+  // Get invitations for an organization
   getInvitations() {
     this.organizationService.getInvitations().subscribe({
       next: (data: Invitation[]) => {
@@ -81,7 +88,7 @@ export class OrganizationDashboardComponent {
     });
   }
 
-
+  // Select a user, duh
   selectUser(orgUser: OrgUser) {
     this.selectedUser = orgUser;
   }
@@ -90,13 +97,12 @@ export class OrganizationDashboardComponent {
     this.selectedInvitation = invitation;
   }
 
+  // Add a user, duh
   addUser() {
     const dialogRef = this.dialog.open(AddUserComponent, {
       width: '400px',
       data: { organizationId: this.organization?.id },
       disableClose: true,
-      // panelClass: 'custom-dialog-container',
-      // backdropClass: 'custom-backdrop'
     });
 
     dialogRef.afterClosed().subscribe(() => {
@@ -104,6 +110,7 @@ export class OrganizationDashboardComponent {
     });
   }
 
+  // Edit a user
   editUser() {
     if (!this.selectedUser) {
       console.error('No user selected to edit');
@@ -127,6 +134,7 @@ export class OrganizationDashboardComponent {
     });
   }
 
+  // Disable sign-in for a user
   disableUser() {
     if (this.selectedUser) {
       this.organizationService.disableUser(this.selectedUser.id).subscribe({
@@ -138,6 +146,7 @@ export class OrganizationDashboardComponent {
     }
   }
 
+  // Delete an existing invitation
   deleteInvite() {
     if (this.selectedInvitation) {
       this.organizationService.deleteInvitation(this.selectedInvitation.id).subscribe({
@@ -162,6 +171,7 @@ export class OrganizationDashboardComponent {
     }
   }
 
+  // Copies a link, obviously
   copyLink() {
     if (this.selectedInvitation) {
       const link = `${window.location.origin}/register/?token=${this.selectedInvitation.token}`;
@@ -174,6 +184,7 @@ export class OrganizationDashboardComponent {
     }
   }
 
+  // Try and handle changes to the organization
   refreshOrganization() {
     const token = localStorage.getItem('authToken');
     if (!token) {
@@ -203,12 +214,64 @@ export class OrganizationDashboardComponent {
       next: (data) => {
         this.organization = {
           ...data,
-          users: data.users || []
+          users: data.users || [],
+          projects: data.projects || []
         };
         console.log('Organization data refreshed:', this.organization);
       },
       error: (err) => console.error('Failed to refresh organization data:', err)
     });
 
+  }
+
+  // Add a project to an organization
+  addProject() {
+    const dialogRef = this.dialog.open(NewProjectComponent, {
+      width: '400px',
+      data: { organizationId: this.organization?.id },
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Dialog closed!');
+      if (result === true) {
+        console.log('Refreshing organization data');
+        this.refreshOrganization();
+      }
+    });
+  }
+
+  editProject() {
+    const dialogRef = this.dialog.open(EditProjectComponent, {
+      width: '400px',
+      data: this.selectedProject,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Edit project dialog closed:', result);
+      if (result === true) {
+        console.log('Refreshing organization data');
+        this.refreshOrganization();
+      }
+    });
+  }
+
+  selectProject(project: Project) {
+    this.selectedProject = project;
+  }
+
+  changeProjectStatus() {
+    if (this.selectedProject) {
+      this.selectedProject.enabled ? this.selectedProject.enabled = false : this.selectedProject.enabled = true;
+      this.organizationService.updateProject(this.selectedProject).subscribe({
+        next: (data) => {
+          console.log(data);
+          this.refreshOrganization();
+          this.selectedProject = null;
+        },
+        error: (err) => console.error('Failed to disable/enable project: ', err)
+      });
+    }
   }
 }

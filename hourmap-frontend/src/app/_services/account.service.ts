@@ -13,8 +13,10 @@ export class AccountService {
   private http = inject(HttpClient);
   private router = inject(Router);
   baseUrl = `${environment.apiUrl}auth/`;
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
+
+
 
   login(user: { email: string, password: string }) {
     return this.http.post<AuthResponse>(`${this.baseUrl}login`, user).subscribe({
@@ -27,11 +29,18 @@ export class AccountService {
           roles: response.roles
         });
         this.isAuthenticatedSubject.next(true);
+        console.log('isAuthenticatedSubject emitted:', true);
         if (!response.organizationId) {
-          console.log('Navigating to OrganizationService... ');
+          console.log('Navigating to create organization... ');
           this.router.navigate(['/create-organization']);
         } else {
-          this.router.navigate(['/organization-dashboard']);
+          if (response.roles.includes('Manager')) {
+            console.log('Navigating to Organization Dashboard...');
+            this.router.navigate(['/organization-dashboard']);
+          }
+          else {
+            this.router.navigate(['/timeclock']);
+          }
         }
       },
       error: (err) => {
@@ -73,7 +82,6 @@ export class AccountService {
   logout() {
     this.removeToken();
     this.isAuthenticatedSubject.next(false);
-    this.router.navigate(['/login']);
   }
 
   private saveToken(token: string) {
@@ -88,8 +96,27 @@ export class AccountService {
     return localStorage.getItem('authToken');
   }
 
+  public getTokenDecoded() {
+    const token = this.getToken();
+    if (!token) {
+      console.log('No token found');
+      return null;
+    }
+    try {
+      const payload = token.split('.')[1];
+      const decoded = window.atob(payload);
+      return JSON.parse(decoded);
+    }
+    catch (e) {
+      console.error('Failed to decode token', e);
+      return null;
+    }
+
+  }
+
   public isLoggedIn() {
     const token = this.getToken();
+    console.log('Initial Auth State:', token ? true : false); // remove this shit
     return !!token;
   }
 

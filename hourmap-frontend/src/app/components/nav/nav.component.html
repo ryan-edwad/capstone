@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" [routerLink]="navLink" routerLinkActive="active"
+      >HourMap</a
+    >
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        @if (isManagerOrAdmin){
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="organization-dashboard"
+            routerLinkActive="active"
+            (click)="logLinkClick('organization-dashboard')"
+            >My Organization</a
+          >
+        </li>
+        } @if(isLoggedIn){
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/timeclock" routerLinkActive="active"
+            >Timeclock</a
+          >
+        </li>
+        } @if(isManagerOrAdmin){
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/reports" routerLinkActive="active"
+            >Reports</a
+          >
+        </li>
+        }
+      </ul>
+
+      @if(isLoggedIn){
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Welcome, {{ userName }}!
+          </a>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="userDropdown"
+          >
+            <li>
+              <a class="dropdown-item" routerLink="/user-profile">Profile</a>
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" (click)="logOut()">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      }
+    </div>
+  </div>
+</nav>

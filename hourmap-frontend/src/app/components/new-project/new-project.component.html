@@ -1,0 +1,57 @@
+<div class="modal-header justify-content-between">
+  <h4 class="modal-title mt-3">Add Project</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="addProjectForm" (ngSubmit)="submit()">
+    <div class="form-group mb-3">
+      <p>Enter the project name and description!</p>
+      <label for="email">Project Name</label>
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        placeholder="My Project"
+        formControlName="name"
+      />
+      <div
+        *ngIf="
+          addProjectForm.get('name')?.invalid &&
+          addProjectForm.get('name')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid project name.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        class="form-control"
+        placeholder="Description"
+        formControlName="description"
+      ></textarea>
+      <div
+        *ngIf="
+          addProjectForm.get('description')?.invalid &&
+          addProjectForm.get('description')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid description.
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary me-2" (click)="submit()">
+    Save
+  </button>
+  <button type="button" class="btn btn-danger" (click)="close()">Cancel</button>
+</div>

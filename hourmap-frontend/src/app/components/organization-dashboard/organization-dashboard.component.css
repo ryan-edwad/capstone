@@ -1,3 +1,9 @@
-table.table-striped.table-selected td {
-  background-color: #ca1515;
+.text-success {
+  color: green;
+  font-weight: bold; /* Optional: Make it bold */
+}
+
+.text-danger {
+  color: red;
+  font-weight: bold; /* Optional: Make it bold */
 }

@@ -1,0 +1,82 @@
+<div class="timeclock-container container">
+  <!-- Row for Clock and Table -->
+  <div class="row">
+    <!-- Left: Clock and Clock-In Form -->
+    <div class="col-md-6 border-end">
+      <!-- Clock -->
+      <div class="clock-section text-left">
+        <h1 class="live-clock">{{ currentTime | date : "mediumTime" }}</h1>
+        <p class="live-date">{{ currentTime | date : "fullDate" }}</p>
+      </div>
+
+      <!-- Clock-In Form -->
+      <div class="clock-action-section mt-4">
+        <h3 class="form-header">Clock In/Out</h3>
+        <form [formGroup]="clockForm" (ngSubmit)="onSubmit()">
+          <div class="form-group mb-3">
+            <label for="location">Location</label>
+            <select
+              id="location"
+              class="form-control"
+              formControlName="location"
+            >
+              <option *ngFor="let location of locations" [value]="location">
+                {{ location }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label for="project">Project</label>
+            <select id="project" class="form-control" formControlName="project">
+              <option *ngFor="let project of projects" [value]="project">
+                {{ project }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label for="role">Role</label>
+            <select id="role" class="form-control" formControlName="role">
+              <option *ngFor="let role of roles" [value]="role">
+                {{ role }}
+              </option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="!clockForm.valid"
+          >
+            {{ clockedIn ? "Clock Out" : "Clock In" }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right: Time Entries Table -->
+    <div class="col-md-6">
+      <div class="time-entries-section">
+        <h3 class="table-header">Today's Time Entries</h3>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Time In</th>
+              <th>Time Out</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let entry of timeEntries">
+              <td>{{ entry.timeIn | date : "shortTime" }}</td>
+              <td>
+                {{
+                  entry.timeOut ? (entry.timeOut | date : "shortTime") : "..."
+                }}
+              </td>
+              <td>{{ entry.duration || "..." }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

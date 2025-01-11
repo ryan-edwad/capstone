@@ -67,7 +67,10 @@ public class OrganizationController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<IActionResult> GetOrganization(int id)
     {
-        var organization = await _context.Organizations.Include(o => o.Users).FirstOrDefaultAsync(o => o.Id == id);
+        var organization = await _context.Organizations
+            .Include(o => o.Users)
+            .Include(o => o.Projects)
+            .FirstOrDefaultAsync(o => o.Id == id);
         if (organization == null) return NotFound(new { message = "Organization not found", id });
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -91,6 +94,13 @@ public class OrganizationController : ControllerBase
                 Email = u.Email ?? string.Empty,
                 JobTitle = u.JobTitle ?? string.Empty,
                 PayRate = u.PayRate ?? 0
+            }).ToList(),
+            Projects = organization.Projects.Select(p => new ProjectDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Enabled = p.Enabled
             }).ToList()
         };
 

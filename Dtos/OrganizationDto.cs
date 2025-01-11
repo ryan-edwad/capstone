@@ -6,5 +6,6 @@ public class OrganizationDto
     public string Name { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
     public List<ApplicationUserDto> Users { get; set; } = new List<ApplicationUserDto>();
+    public List<ProjectDto> Projects { get; set; } = new List<ProjectDto>();
 
 }

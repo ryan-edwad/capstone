@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Organization } from '../_models/organization';
 import { Invitation } from '../_models/invitation';
+import { Project } from '../_models/project';
+import { CreateProject } from '../_models/create-project';
 
 @Injectable({
   providedIn: 'root'
@@ -63,4 +65,26 @@ export class OrganizationService {
     var enableUrl = `${environment.apiUrl}user/enable-sign-in/${userId}`;
     return this.http.put<{ message: string }>(enableUrl, {});
   }
+
+  addProject(project: CreateProject) {
+    var addProjectUrl = `${environment.apiUrl}project/create`;
+    return this.http.post<{ message: string }>(addProjectUrl, project);
+
+  }
+
+  getProjects() {
+    var projectsUrl = `${environment.apiUrl}project/get-projects`;
+    return this.http.get<Project[]>(projectsUrl);
+  }
+
+  getProject(id: number) {
+    var projectUrl = `${environment.apiUrl}project/${id}`;
+    return this.http.get<Project>(projectUrl);
+  }
+
+  updateProject(project: Project) {
+    var projectUrl = `${environment.apiUrl}project/update`;
+    return this.http.put<{ message: string }>(projectUrl, project);
+  }
+
 }
