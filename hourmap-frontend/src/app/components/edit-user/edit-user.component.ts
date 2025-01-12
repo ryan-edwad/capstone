@@ -1,19 +1,23 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { OrganizationService } from '../../_services/organization.service';
 import { CommonModule } from '@angular/common';
 import { OrgUser } from '../../_models/org-user';
+import { Project } from '../../_models/project';
 
 @Component({
   selector: 'app-edit-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './edit-user.component.html',
   styleUrl: './edit-user.component.css'
 })
 export class EditUserComponent {
   editUserForm!: FormGroup;
+  assignedProjects: Project[] = [];
+  availableProjects: Project[] = [];
+  selectedProject: Project | null = null;
 
   constructor(
     private dialogRef: MatDialogRef<EditUserComponent>,
@@ -21,10 +25,10 @@ export class EditUserComponent {
     private organizationService:
 
       OrganizationService,
-    @Inject(MAT_DIALOG_DATA) public user: OrgUser
+    @Inject(MAT_DIALOG_DATA) public data: { user: OrgUser, availableProjects: Project[] }
   ) {
-    console.log('Data passed to EditUserComponent:', user);
-    if (!user) {
+    console.log('Data passed to EditUserComponent:', data);
+    if (!data) {
       console.error('No user data provided to the dialog');
       return;
     }
@@ -39,17 +43,19 @@ export class EditUserComponent {
     });
 
     // Patch the form values with the user's data
-    this.editUserForm.patchValue(user);
+    this.editUserForm.patchValue(data.user);
     console.log('Form initialized with user data:', this.editUserForm.value);
   }
 
   submit() {
     if (this.editUserForm.invalid) return;
 
-    const editUser = this.editUserForm.value;
+    const editUser = { ...this.editUserForm.value, projects: this.assignedProjects };
     console.log('Submitting edited user:', editUser);
-    const userId = this.user.id;
-    console.log('User ID:', userId);
+
+    // LOOK HERE NOW!!
+    var userId = this.data.user.id;
+
     this.organizationService.updateUser(userId, editUser).subscribe({
       next: (response) => {
         console.log('Response from API:', response);

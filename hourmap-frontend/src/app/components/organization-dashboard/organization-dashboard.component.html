@@ -20,7 +20,13 @@
         Projects
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#locations-tab">
+        Locations
+      </a>
+    </li>
   </ul>
+
   <!--Users Tab-->
   <div class="tab-content">
     <div class="tab-pane fade show active" id="users-tab">
@@ -172,6 +178,58 @@
       </table>
       <div *ngIf="organization?.projects?.length === 0">
         <p>No projects yet. Add projects to get started!</p>
+      </div>
+    </div>
+    <!--Locations Tab-->
+    <div class="tab-pane fade" id="locations-tab">
+      <div class="mt-3 mb-3">
+        <button class="btn btn-primary btn-block" (click)="addLocation()">
+          Add Location
+        </button>
+        <button
+          class="btn btn-warning btn-block ms-2"
+          [disabled]="!selectedLocation"
+          (click)="editLocation()"
+        >
+          Edit Location
+        </button>
+        <button
+          class="btn btn-danger btn-block ms-2"
+          [disabled]="!selectedLocation"
+          (click)="deleteLocation()"
+        >
+          Delete Location
+        </button>
+      </div>
+      <table
+        class="table table-striped"
+        *ngIf="organization?.locations && organization.locations.length > 0"
+      >
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let location of organization?.locations"
+            [class.table-primary]="selectedLocation === location"
+            (click)="selectLocation(location)"
+          >
+            <td>{{ location.name }}</td>
+            <td>
+              {{ location.address }} {{ location.city }} {{ location.state }}
+            </td>
+            <td>
+              {{ location.description }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="organization?.locations?.length === 0">
+        <p>No locations yet. Add locations to get started!</p>
       </div>
     </div>
   </div>

@@ -70,6 +70,7 @@ public class OrganizationController : ControllerBase
         var organization = await _context.Organizations
             .Include(o => o.Users)
             .Include(o => o.Projects)
+            .Include(o => o.Locations)
             .FirstOrDefaultAsync(o => o.Id == id);
         if (organization == null) return NotFound(new { message = "Organization not found", id });
 
@@ -101,6 +102,15 @@ public class OrganizationController : ControllerBase
                 Name = p.Name,
                 Description = p.Description,
                 Enabled = p.Enabled
+            }).ToList(),
+            Locations = organization.Locations.Select(l => new LocationDto
+            {
+                Id = l.Id,
+                Name = l.Name,
+                Address = string.IsNullOrWhiteSpace(l.Address) ? "" : l.Address,
+                City = string.IsNullOrWhiteSpace(l.City) ? "" : l.City,
+                State = string.IsNullOrWhiteSpace(l.State) ? "" : l.State,
+                Description = string.IsNullOrWhiteSpace(l.Description) ? "" : l.Description
             }).ToList()
         };
 

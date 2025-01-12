@@ -5,6 +5,7 @@ import { Organization } from '../_models/organization';
 import { Invitation } from '../_models/invitation';
 import { Project } from '../_models/project';
 import { CreateProject } from '../_models/create-project';
+import { WorkLocation } from '../_models/work-location';
 
 @Injectable({
   providedIn: 'root'
@@ -85,6 +86,12 @@ export class OrganizationService {
   updateProject(project: Project) {
     var projectUrl = `${environment.apiUrl}project/update`;
     return this.http.put<{ message: string }>(projectUrl, project);
+  }
+
+  addLocation(location: WorkLocation) {
+    var addLocationUrl = `${environment.apiUrl}location/create`;
+    return this.http.post<{ message: string }>(addLocationUrl, location);
+
   }
 
 }

@@ -1,0 +1,84 @@
+<div class="modal-header justify-content-between">
+  <h4 class="modal-title mt-3">Add Location</h4>
+  <button
+    type="button"
+    class="btn-close"
+    aria-label="Close"
+    (click)="close()"
+  ></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="addLocationForm" (ngSubmit)="submit()">
+    <div class="form-group mb-3">
+      <label for="name">Location Name</label>
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        formControlName="name"
+        placeholder="Enter location name"
+      />
+      <div
+        *ngIf="
+          addLocationForm.get('name')?.invalid &&
+          addLocationForm.get('name')?.touched
+        "
+        class="text-danger"
+      >
+        Please enter a valid location name.
+      </div>
+    </div>
+    <div class="form-group mb-3">
+      <label for="address">Location Address</label>
+      <input
+        id="address"
+        type="text"
+        placeholder="Enter address (optional)"
+        class="form-control"
+        formControlName="address"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="city">City</label>
+      <input
+        id="city"
+        type="text"
+        placeholder="Enter city (optional)"
+        class="form-control"
+        formControlName="city"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="state">State</label>
+      <input
+        id="state"
+        type="text"
+        placeholder="Enter state (optional)"
+        class="form-control"
+        formControlName="state"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="description">Description</label>
+      <input
+        id="description"
+        type="text"
+        placeholder="Describe it here (optional)"
+        class="form-control"
+        formControlName="description"
+      />
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100 mb-2"
+      [disabled]="addLocationForm.invalid"
+    >
+      Save Changes
+    </button>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-danger w-100" (click)="close()">
+    Cancel
+  </button>
+</div>

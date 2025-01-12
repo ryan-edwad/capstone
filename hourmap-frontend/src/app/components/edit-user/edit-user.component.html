@@ -105,17 +105,19 @@
         Please enter a valid pay rate.
       </div>
     </div>
-    <button
-      type="submit"
-      class="btn btn-primary w-100 mb-2"
-      [disabled]="editUserForm.invalid"
-    >
-      Save Changes
-    </button>
+    <div class="d-flex mt-4">
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mb-2"
+        [disabled]="editUserForm.invalid"
+      >
+        Save Changes
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger w-100" (click)="close()">
+        Cancel
+      </button>
+    </div>
   </form>
-</div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-danger w-100" (click)="close()">
-    Cancel
-  </button>
 </div>

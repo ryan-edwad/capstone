@@ -33,7 +33,7 @@ export class AddUserComponent {
     var organizationUser = { email, organizationId: this.data.organizationId };
     this.organizationService.inviteUser(organizationUser).subscribe({
       next: (response) => {
-        console.log('Response from API:', response); // Log API response
+        console.log('Response from API:', response); 
         this.invitationLink = response.registrationLink;
       },
       error: (err) => {

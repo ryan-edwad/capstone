@@ -22,7 +22,7 @@ public class LocationController : ControllerBase
     // Create new location
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
-    public async Task<IActionResult> CreateLocation(LocationDto locationDto)
+    public async Task<IActionResult> CreateLocation(CreateLocationDto createLocationDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var organizationClaim = User.FindFirst("OrganizationId")?.Value;
@@ -34,11 +34,11 @@ public class LocationController : ControllerBase
 
         var location = new Location
         {
-            Name = locationDto.Name,
-            Address = locationDto.Address,
-            City = locationDto.City,
-            State = locationDto.State,
-            Description = locationDto.Description,
+            Name = createLocationDto.Name,
+            Address = createLocationDto.Address,
+            City = createLocationDto.City,
+            State = createLocationDto.State,
+            Description = createLocationDto.Description,
             OrganizationId = organizationId
         };
 
@@ -47,6 +47,7 @@ public class LocationController : ControllerBase
 
         var newLocationDto = new LocationDto
         {
+            Id = location.Id,
             Name = location.Name,
             Address = location.Address,
             City = location.City,
@@ -58,7 +59,7 @@ public class LocationController : ControllerBase
     }
 
     // Get individual location by ID
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetLocation(int id)
     {
@@ -78,7 +79,7 @@ public class LocationController : ControllerBase
     }
 
     // Get all locations for an organization
-    [HttpGet("locations")]
+    [HttpGet("all-locations")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetLocations()
     {
