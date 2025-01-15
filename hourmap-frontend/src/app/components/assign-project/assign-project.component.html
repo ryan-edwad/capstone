@@ -1,0 +1,88 @@
+<div
+  class="container"
+  style="height: 60vh; display: flex; flex-direction: column; overflow: hidden"
+>
+  <div class="modal-header justify-content-between">
+    <h4 class="modal-title mt-3">Assign Project</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="close()"
+    ></button>
+  </div>
+
+  <div class="modal-body" style="flex-grow: 1; overflow: hidden">
+    <!-- Assigned Users Section -->
+    <div class="assigned-users mb-3">
+      <h5>Assigned Users</h5>
+      <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px">
+        <ul
+          class="list-group-item"
+          style="max-height: 80px; overflow-y: scroll"
+        >
+          <li
+            *ngFor="let user of assignedUsers"
+            class="list-group-item d-flex align-items-center"
+            [class.active]="user === selectedAssignedUser"
+            (click)="selectAssignedUser(user)"
+            style="display: flex"
+          >
+            <span class="flex-grow-1" style="width: 80%">{{ user.email }}</span>
+            @if(user === selectedAssignedUser){
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="removeUser(user)"
+              style="width: 20%"
+            >
+              Unassign
+            </button>
+            }
+          </li>
+          <li
+            *ngIf="assignedUsers.length === 0"
+            class="list-group-item text-muted"
+          >
+            No users assigned to this project.
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Search and Assign New Users Section -->
+    <div class="assign-users">
+      <h5>Assign New Users</h5>
+      <div style="border: 1px solid #ccc; padding: 10px; border-radius: 5px">
+        <input
+          type="text"
+          class="form-control mb-2"
+          placeholder="Search users..."
+          (input)="filterUsers($event)"
+          style="width: 100%"
+        />
+        <ul class="list-group" style="max-height: 100px; overflow-y: auto">
+          <li *ngFor="let user of filteredUsers" class="list-group-item">
+            <a class="dropdown-item" (click)="selectUser(user)">
+              {{ user.email }}
+            </a>
+          </li>
+          <li
+            *ngIf="filteredUsers.length === 0"
+            class="list-group-item text-muted"
+          >
+            No results found
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-success me-2" (click)="submit()">
+      Save Changes
+    </button>
+    <button type="button" class="btn btn-danger" (click)="close()">
+      Cancel
+    </button>
+  </div>
+</div>

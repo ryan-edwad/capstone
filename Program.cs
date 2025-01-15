@@ -21,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     // TODO: Edit this before production
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.LogTo(Console.WriteLine, LogLevel.Information);
 });
 
 // Add CORS policy

@@ -140,6 +140,13 @@
           Edit Project
         </button>
         <button
+          class="btn btn-success btn-block ms-2"
+          [disabled]="!selectedProject"
+          (click)="assignProject()"
+        >
+          Assign Project
+        </button>
+        <button
           [ngClass]="
             selectedProject?.enabled
               ? 'btn btn-danger btn-block ms-2'

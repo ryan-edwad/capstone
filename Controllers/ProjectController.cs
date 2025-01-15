@@ -127,4 +127,83 @@ public class ProjectController : ControllerBase
         await _dbContext.SaveChangesAsync();
         return NoContent();
     }
+
+    [HttpGet("{id}/assigned-users")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
+    public async Task<ActionResult<IEnumerable<ApplicationUserDto>>> GetAssignedUsers(int id)
+    {
+        var project = await _dbContext.Projects.Include(p => p.UserProjects)
+                                               .ThenInclude(up => up.User)
+                                               .FirstOrDefaultAsync(p => p.Id == id);
+        if (project == null) return NotFound();
+
+        var assignedUsers = project.UserProjects.Select(up => new ApplicationUserDto
+        {
+            Id = up.User.Id,
+            FirstName = up.User.FirstName ?? "",
+            LastName = up.User.LastName ?? "",
+            Email = up.User.Email ?? "",
+            JobTitle = up.User.JobTitle ?? "",
+            PayRate = up.User.PayRate ?? 0
+
+        }).ToList();
+
+        if (assignedUsers.Count == 0)
+        {
+            return Ok(new List<ApplicationUserDto>());
+        }
+
+        return Ok(assignedUsers);
+    }
+
+    [HttpPost("{id}/update-users")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
+    public async Task<IActionResult> UpdateProjectUsers(int id, List<string> userIds)
+    {
+        // Load the project along with its related user-project associations
+        var project = await _dbContext.Projects
+            .Include(p => p.UserProjects)
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+            return NotFound(new { message = $"Project with ID {id} not found." });
+
+        // Validate that all userIds exist in the database
+        var validUserIds = await _dbContext.Users
+            .Where(u => userIds.Contains(u.Id))
+            .Select(u => u.Id)
+            .ToListAsync();
+
+        if (validUserIds.Count != userIds.Count)
+        {
+            var invalidUserIds = userIds.Except(validUserIds).ToList();
+            return BadRequest(new
+            {
+                message = "Some user IDs are invalid.",
+                invalidUserIds
+            });
+        }
+
+        // Clear the existing user-project stuff out. 
+        _dbContext.UserProjects.RemoveRange(project.UserProjects);
+
+        var newAssignments = validUserIds.Select(userId => new UserProject
+        {
+            UserId = userId,
+            ProjectId = id,
+            OrganizationId = project.OrganizationId
+        });
+
+        foreach (var entry in newAssignments)
+        {
+            Console.WriteLine($"Assigning UserId {entry.UserId} to ProjectId {entry.ProjectId}");
+        }
+
+
+        await _dbContext.UserProjects.AddRangeAsync(newAssignments);
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new { message = "Users assigned to project." });
+    }
 }
+

@@ -1,0 +1,32 @@
+.mat-dialog-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  max-width: 90%;
+  height: auto !important;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 0rem 1rem 0rem 1.5rem;
+}
+
+.modal-footer {
+  padding: 0.75rem 1.5rem;
+}
+.modal-body {
+  max-height: 80vh; /* Adjust modal body to fit within 80% of the viewport height */
+  overflow-y: auto;
+}
+
+.dropdown-menu {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.list-group-item.active {
+  background-color: lightgray;
+  color: white;
+  font-style: bold;
+}

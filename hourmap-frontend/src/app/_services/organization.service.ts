@@ -6,6 +6,7 @@ import { Invitation } from '../_models/invitation';
 import { Project } from '../_models/project';
 import { CreateProject } from '../_models/create-project';
 import { WorkLocation } from '../_models/work-location';
+import { OrgUser } from '../_models/org-user';
 
 @Injectable({
   providedIn: 'root'
@@ -92,6 +93,16 @@ export class OrganizationService {
     var addLocationUrl = `${environment.apiUrl}location/create`;
     return this.http.post<{ message: string }>(addLocationUrl, location);
 
+  }
+
+  getAssignedUsers(projectId: number) {
+    var assignedUsersUrl = `${environment.apiUrl}project/${projectId}/assigned-users`;
+    return this.http.get<OrgUser[]>(assignedUsersUrl);
+  }
+
+  updateProjectUsers(projectId: number, userIds: string[]) {
+    var updateUrl = `${environment.apiUrl}project/${projectId}/update-users`;
+    return this.http.post<{ message: string }>(updateUrl, userIds);
   }
 
 }

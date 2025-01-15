@@ -14,6 +14,7 @@ import { NewProjectComponent } from '../new-project/new-project.component';
 import { EditProjectComponent } from '../edit-project/edit-project.component';
 import { WorkLocation } from '../../_models/work-location';
 import { AddLocationComponent } from '../add-location/add-location.component';
+import { AssignProjectComponent } from '../assign-project/assign-project.component';
 
 @Component({
   selector: 'app-organization-dashboard',
@@ -259,6 +260,30 @@ export class OrganizationDashboardComponent {
       if (result === true) {
         console.log('Refreshing organization data');
         this.refreshOrganization();
+      }
+    });
+  }
+
+  assignProject() {
+    console.log(this.organization.users);
+    const dialogRef = this.dialog.open(AssignProjectComponent, {
+      width: '400px',
+      height: '50vh',
+      data: {
+        project: this.selectedProject,
+        users: this.organization.users
+      },
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Assign project dialog closed:', result);
+      if (result === true) {
+        console.log('Updated project users! Nice!');
+        console.log('Refreshing organization data');
+        this.refreshOrganization();
+      } else {
+        console.log('Closed without saving project users.');
       }
     });
   }
