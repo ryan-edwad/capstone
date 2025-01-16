@@ -43,7 +43,8 @@ public class UserController : ControllerBase
             LastName = !string.IsNullOrWhiteSpace(u.LastName) ? u.LastName : string.Empty,
             Email = !string.IsNullOrWhiteSpace(u.Email) ? u.Email : string.Empty,
             JobTitle = !string.IsNullOrWhiteSpace(u.JobTitle) ? u.JobTitle : string.Empty,
-            PayRate = u.PayRate.HasValue ? u.PayRate.Value : 0,
+            PayRate = u.PayRate ?? 0,
+            Roles = _userManager.GetRolesAsync(u).Result.ToList()
         });
 
         if (userDtos == null)
@@ -75,6 +76,7 @@ public class UserController : ControllerBase
             Email = !string.IsNullOrWhiteSpace(user.Email) ? user.Email : string.Empty,
             JobTitle = !string.IsNullOrWhiteSpace(user.JobTitle) ? user.JobTitle : string.Empty,
             PayRate = user.PayRate.HasValue ? user.PayRate.Value : 0,
+            LoginEnabled = user.LoginEnabled
         };
 
         return Ok(userDto);

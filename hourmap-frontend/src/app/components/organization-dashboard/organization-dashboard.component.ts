@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
@@ -15,11 +15,13 @@ import { EditProjectComponent } from '../edit-project/edit-project.component';
 import { WorkLocation } from '../../_models/work-location';
 import { AddLocationComponent } from '../add-location/add-location.component';
 import { AssignProjectComponent } from '../assign-project/assign-project.component';
+import { FormsModule } from '@angular/forms';
+import { EditLocationComponent } from '../edit-location/edit-location.component';
 
 @Component({
   selector: 'app-organization-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './organization-dashboard.component.html',
   styleUrl: './organization-dashboard.component.css'
 })
@@ -30,8 +32,33 @@ export class OrganizationDashboardComponent {
   selectedProject: Project | null = null;
   selectedLocation: WorkLocation | null = null;
   invitations: Invitation[] = [];
+  filteredProjects: Project[] = [];
+  filteredUsers: OrgUser[] = [];
+  filteredInvitations: Invitation[] = [];
+  showOnlyEnabledProjects: boolean = false;
+  showOnlyEnabledUsers: boolean = false;
+  searchUsersQuery: string = '';
+  searchInvitationsQuery: string = '';
+  searchProjectsQuery: string = '';
 
   constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog) { }
+
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+
+    const isInsideTable = target.closest('table');
+    if (!isInsideTable) {
+      this.clearSelections();
+    }
+  }
+
+  clearSelections() {
+    this.selectedUser = null;
+    this.selectedInvitation = null;
+    this.selectedProject = null;
+    this.selectedLocation = null;
+  }
 
   ngOnInit() {
     const token = localStorage.getItem('authToken');
@@ -72,7 +99,9 @@ export class OrganizationDashboardComponent {
           projects: data.projects || [],
           locations: data.locations || []
         },
-          console.log('Loading organization:', this.organization);
+          this.filteredProjects = this.organization.projects;
+        this.filteredUsers = this.organization.users;
+        console.log('Loading organization:', this.organization);
       },
       error: (err) => console.error('Failed to load organization: ', err)
     });
@@ -85,12 +114,19 @@ export class OrganizationDashboardComponent {
       next: (data: Invitation[]) => {
         this.invitations = data;
         console.log('Loaded invitations:', this.invitations);
+        this.filteredInvitations = this.invitations;
       },
       error: (err) => {
         console.error('Failed to load invitations:', err)
         if (err.error?.message) { console.error(err.error.message); }
       }
     });
+  }
+
+  filterInvitations() {
+    const query = this.searchInvitationsQuery?.toLowerCase() || '';
+    this.filteredInvitations = this.invitations.filter(invite =>
+      invite.email.toLowerCase().includes(query));
   }
 
   // Select a user, duh
@@ -222,12 +258,15 @@ export class OrganizationDashboardComponent {
         this.organization = {
           ...data,
           users: data.users || [],
-          projects: data.projects || []
+          projects: data.projects || [],
+          locations: data.locations || []
         };
         console.log('Organization data refreshed:', this.organization);
       },
       error: (err) => console.error('Failed to refresh organization data:', err)
     });
+
+
 
   }
 
@@ -306,6 +345,29 @@ export class OrganizationDashboardComponent {
     }
   }
 
+  filterUsers() {
+    const query = this.searchUsersQuery?.toLowerCase() || '';
+    this.filteredUsers = this.organization.users.filter(user =>
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
+    );
+
+    if (this.showOnlyEnabledUsers) {
+      this.filteredUsers = this.filteredUsers.filter(user => user.loginEnabled);
+    }
+  }
+
+  filterProjects() {
+    const query = this.searchProjectsQuery?.toLowerCase() || '';
+    this.filteredProjects = this.organization.projects.filter(project =>
+      project.name.toLowerCase().includes(query) || project.description.toLowerCase().includes(query)
+    );
+    if (this.showOnlyEnabledProjects) {
+      this.filteredProjects = this.organization.projects.filter(p => p.enabled);
+    }
+  }
+
   selectLocation(workLocation: WorkLocation) {
     this.selectedLocation = workLocation;
   }
@@ -329,9 +391,40 @@ export class OrganizationDashboardComponent {
 
   editLocation() {
     // Open a dialog to edit a location
+    const dialogRef = this.dialog.open(EditLocationComponent, {
+      width: '400px',
+      data: this.selectedLocation,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('Edit location dialog closed:', result);
+      if (result === true) {
+        console.log('Refreshing organization data');
+        this.refreshOrganization
+      }
+    });
   }
 
   deleteLocation() {
-    // Delete a location
+    if (this.selectedLocation) {
+      this.organizationService.deleteLocation(this.selectedLocation).subscribe({
+        next: (data) => {
+          console.log('Location deleted:', data);
+
+          this.organization.locations = this.organization.locations.filter(
+            (location) => location.id !== this.selectedLocation?.id
+          );
+
+          this.selectedLocation = null;
+        },
+        error: (err) => {
+          console.error('Failed to delete location: ', err);
+          if (err.error?.message) {
+            console.error(err.error.message);
+          }
+        },
+      });
+    }
   }
 }

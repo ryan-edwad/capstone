@@ -95,6 +95,16 @@ export class OrganizationService {
 
   }
 
+  updateLocation(location: WorkLocation) {
+    var locationUrl = `${environment.apiUrl}location/update`;
+    return this.http.put<{ message: string }>(locationUrl, location);
+  }
+
+  deleteLocation(location: WorkLocation) {
+    var deleteLocationUrl = `${environment.apiUrl}location/delete/${location.id}`;
+    return this.http.delete<{ message: string }>(deleteLocationUrl);
+  }
+
   getAssignedUsers(projectId: number) {
     var assignedUsersUrl = `${environment.apiUrl}project/${projectId}/assigned-users`;
     return this.http.get<OrgUser[]>(assignedUsersUrl);

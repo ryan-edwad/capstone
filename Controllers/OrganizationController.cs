@@ -4,6 +4,7 @@ using HourMap.Dtos;
 using HourMap.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,6 +82,13 @@ public class OrganizationController : ControllerBase
 
         if (user.OrganizationId != organization.Id && !isAdmin) return Unauthorized("Unauthorized to view this organization");
 
+        var userRoles = await _context.UserRoles
+            .Where(ur => organization.Users.Select(u => u.Id).Contains(ur.UserId))
+            .Join(_context.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => new { ur.UserId, RoleName = r.Name })
+            .ToListAsync();
+
+        var rolesByUserId = userRoles.GroupBy(x => x.UserId).ToDictionary(g => g.Key, g => g.Select(x => x.RoleName).ToList());
+
         var organizationDto = new OrganizationDto
         {
             Id = organization.Id,
@@ -94,7 +102,12 @@ public class OrganizationController : ControllerBase
                 LastName = u.LastName ?? string.Empty,
                 Email = u.Email ?? string.Empty,
                 JobTitle = u.JobTitle ?? string.Empty,
-                PayRate = u.PayRate ?? 0
+                PayRate = u.PayRate ?? 0,
+                Roles = rolesByUserId.ContainsKey(u.Id) ? rolesByUserId[u.Id]
+                                     .Where(role => role != null)
+                                     .Select(role => role!)
+                                     .ToList() : new List<string>(),
+                LoginEnabled = u.LockoutEnabled || (u.LockoutEnd.HasValue && u.LockoutEnd <= DateTimeOffset.Now)
             }).ToList(),
             Projects = organization.Projects.Select(p => new ProjectDto
             {

@@ -75,7 +75,7 @@ export class EditUserComponent {
 
   close() {
     console.log('Closing dialog');
-    this.dialogRef.close();
+    this.dialogRef.close(false);
   }
 
 }

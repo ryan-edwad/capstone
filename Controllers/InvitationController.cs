@@ -43,7 +43,7 @@ public class InvitationController : ControllerBase
         var isAdmin = roles.Contains("Admin");
 
         var invitations = await _context.Invitations
-            .Where(i => i.OrganizationId == user.OrganizationId)
+            .Where(i => i.OrganizationId == user.OrganizationId && i.ExpirationDate > DateTime.UtcNow)
             .Select(i => new InvitationDto
             {
                 Id = i.Id,

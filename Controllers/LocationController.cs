@@ -103,23 +103,23 @@ public class LocationController : ControllerBase
     }
 
     // Update location by ID, admins and ManagesOrganization == true only
-    [HttpPut("update/{id}")]
+    [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
-    public async Task<IActionResult> UpdateLocation(int id, string? name, string? address, string? city, string? state, string? description)
+    public async Task<IActionResult> UpdateLocation(LocationDto locationDto)
     {
-        var location = await _context.Locations.FindAsync(id);
+        var location = await _context.Locations.FindAsync(locationDto.Id);
         if (location == null) return NotFound("Location not found");
 
-        location.Name = !string.IsNullOrWhiteSpace(name) ? name : location.Name;
-        location.Address = !string.IsNullOrWhiteSpace(address) ? address : location.Address;
-        location.City = !string.IsNullOrWhiteSpace(city) ? city : location.City;
-        location.State = !string.IsNullOrWhiteSpace(state) ? state : location.State;
-        location.Description = !string.IsNullOrWhiteSpace(description) ? description : location.Description;
+        location.Name = !string.IsNullOrWhiteSpace(locationDto.Name) ? locationDto.Name : "";
+        location.Address = !string.IsNullOrWhiteSpace(locationDto.Address) ? locationDto.Address : "";
+        location.City = !string.IsNullOrWhiteSpace(locationDto.City) ? locationDto.City : "";
+        location.State = !string.IsNullOrWhiteSpace(locationDto.State) ? locationDto.State : "";
+        location.Description = !string.IsNullOrWhiteSpace(locationDto.Description) ? locationDto.Description : "";
 
         _context.Locations.Update(location);
         await _context.SaveChangesAsync();
 
-        var locationDto = new LocationDto
+        var updatedLocationDto = new LocationDto
         {
             Name = location.Name,
             Address = location.Address,
@@ -128,7 +128,7 @@ public class LocationController : ControllerBase
             Description = location.Description
         };
 
-        return Ok(new { message = "Location updated successfully!", locationDto });
+        return Ok(new { message = "Location updated successfully!", updatedLocationDto });
     }
 
     // Delete location by ID, admins and managers who has ManageOrganization == true only

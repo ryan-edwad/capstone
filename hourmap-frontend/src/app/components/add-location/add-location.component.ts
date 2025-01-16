@@ -37,8 +37,7 @@ export class AddLocationComponent {
     this.organizationService.addLocation(location).subscribe({
       next: (response) => {
         console.log('Response from API:', response);
-        this.close();
-        return true;
+        this.dialogRef.close(true);
       },
       error: (err) => {
         console.error('Failed to add location:', err);
@@ -52,8 +51,7 @@ export class AddLocationComponent {
   }
 
   close() {
-    this.dialogRef.close();
-    return false;
+    this.dialogRef.close(true);
 
   }
 

@@ -8,4 +8,6 @@ export interface OrgUser {
     jobTitle: string,
     payRate: number,
     projects: Project[],
+    loginEnabled: boolean
+    roles: string[]
 }
