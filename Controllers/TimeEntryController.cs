@@ -230,4 +230,64 @@ public class TimeEntryController : ControllerBase
 
         return Ok(timeEntryDtos);
     }
+
+    [HttpGet("recent-entry")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
+    public async Task<IActionResult> GetRecentEntry()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized("Invalid user id");
+
+        var recentEntry = await _context.TimeEntries
+            .Where(te => te.UserId == userId)
+            .OrderByDescending(te => te.ClockIn)
+            .FirstOrDefaultAsync();
+
+        if (recentEntry == null) return NotFound("No recent time entry found");
+
+        var timeEntryDto = new TimeEntryDto
+        {
+            Id = recentEntry.Id,
+            UserId = recentEntry.UserId,
+            ClockIn = recentEntry.ClockIn,
+            ClockOut = recentEntry.ClockOut,
+            Duration = recentEntry.Duration,
+            ProjectId = recentEntry.ProjectId,
+            LocationId = recentEntry.LocationId
+        };
+
+        return Ok(timeEntryDto);
+    }
+
+    [HttpGet("get-user-entries-by-dates")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
+    public async Task<IActionResult> GetUserEntriesByDates([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized("Invalid user id");
+
+        var query = _context.TimeEntries.Where(te => te.UserId == userId);
+
+        query = query.Where(te => te.ClockIn >= startDate.ToUniversalTime() && te.ClockIn <= endDate.ToUniversalTime());
+
+        var results = await query.ToListAsync();
+        if (results.Count == 0)
+        {
+            return NotFound(new { message = "No time entries found for the given user id and date range", userId, startDate, endDate });
+        }
+
+        var timeEntryDtos = results.Select(te => new TimeEntryDto
+        {
+            Id = te.Id,
+            UserId = te.UserId,
+            ClockIn = te.ClockIn,
+            ClockOut = te.ClockOut,
+            Duration = te.Duration,
+            ProjectId = te.ProjectId,
+            LocationId = te.LocationId
+        });
+
+        return Ok(timeEntryDtos);
+    }
+
 }

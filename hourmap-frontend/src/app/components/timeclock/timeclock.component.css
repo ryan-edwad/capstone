@@ -27,3 +27,12 @@
     text-align: center;
   }
 }
+
+.incomplete {
+  background-color: #ffe4e1; /* Light red for incomplete entries */
+}
+.total-duration {
+  margin-left: auto; /* Pushes this div to the right */
+  font-size: 1rem; /* Adjust size as needed */
+  white-space: nowrap; /* Prevents wrapping */
+}

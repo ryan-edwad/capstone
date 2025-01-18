@@ -20,16 +20,16 @@
               class="form-control"
               formControlName="location"
             >
-              <option *ngFor="let location of locations" [value]="location">
-                {{ location }}
+              <option *ngFor="let location of locations" [value]="location.id">
+                {{ location.name }}
               </option>
             </select>
           </div>
           <div class="form-group mb-3">
             <label for="project">Project</label>
             <select id="project" class="form-control" formControlName="project">
-              <option *ngFor="let project of projects" [value]="project">
-                {{ project }}
+              <option *ngFor="let project of projects" [value]="project.id">
+                {{ project.name }}
               </option>
             </select>
           </div>
@@ -55,24 +55,52 @@
     <!-- Right: Time Entries Table -->
     <div class="col-md-6">
       <div class="time-entries-section">
-        <h3 class="table-header">Today's Time Entries</h3>
+        <h3 class="table-header">My Time Entries</h3>
+        <div class="d-flex align-items-center justify-content-between">
+          <select
+            class="form-select me-2"
+            style="width: 200px"
+            [(ngModel)]="selectedTimeRange"
+            (change)="updateDisplayedEntries()"
+          >
+            <option value="today">Today</option>
+            <option value="payPeriod">Pay Period</option>
+          </select>
+          <span *ngIf="totalDuration > 0" class="total-duration"
+            >Total Duration: {{ totalDuration | number : "1.1-2" }} hours</span
+          >
+        </div>
+
         <table class="table table-striped">
           <thead>
             <tr>
+              <th>Date</th>
               <th>Time In</th>
               <th>Time Out</th>
               <th>Duration</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let entry of timeEntries">
-              <td>{{ entry.timeIn | date : "shortTime" }}</td>
+            <tr
+              *ngFor="let entry of timeEntries"
+              [class.incomplete]="!entry.clockOut"
+            >
+              <td>{{ entry.clockIn | date : "shortDate" }}</td>
               <td>
-                {{
-                  entry.timeOut ? (entry.timeOut | date : "shortTime") : "..."
-                }}
+                <span [matTooltip]="(entry.clockIn | date : 'medium') ?? ''">
+                  {{ entry.clockIn | date : "mediumTime" }}
+                </span>
               </td>
-              <td>{{ entry.duration || "..." }}</td>
+              <td>
+                <span
+                  *ngIf="entry.clockOut"
+                  [matTooltip]="(entry.clockOut | date : 'medium') ?? ''"
+                >
+                  {{ entry.clockOut | date : "mediumTime" }}
+                </span>
+                <span *ngIf="!entry.clockOut">N/A</span>
+              </td>
+              <td>{{ (entry.numDuration | number : "1.1-2") || "..." }}</td>
             </tr>
           </tbody>
         </table>
