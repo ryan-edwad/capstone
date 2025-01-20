@@ -2,9 +2,11 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { catchError } from 'rxjs';
+import { AccountService } from '../_services/account.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const accountService = inject(AccountService);
   let hasRedirected = false;
 
   return next(req).pipe(
@@ -31,6 +33,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               hasRedirected = true;
               console.error('Unauthorized', error.status);
               alert('Unauthorized. Redirecting to login.');
+              accountService.logout();
               router.navigateByUrl('/login').then(() => {
                 hasRedirected = false;
               })

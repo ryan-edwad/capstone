@@ -69,6 +69,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasForeignKey(t => t.UserId)
             .IsRequired();
 
+        modelBuilder.Entity<TimeEntry>()
+            .HasOne(t => t.Organization)
+            .WithMany(o => o.TimeEntries)
+            .HasForeignKey(t => t.OrganizationId)
+            .IsRequired();
+
         // Organization - Invitations relationship
         modelBuilder.Entity<Invitation>()
             .HasOne(i => i.Organization)

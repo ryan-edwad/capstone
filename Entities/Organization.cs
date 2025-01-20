@@ -17,6 +17,7 @@ public class Organization
     public ICollection<Project> Projects { get; set; } = [];
     public ICollection<Location> Locations { get; set; } = [];
     public ICollection<Invitation> Invitations { get; set; } = [];
+    public ICollection<TimeEntry> TimeEntries { get; set; } = [];
 
     [NotMapped]
     public IEnumerable<ApplicationUser> Managers =>

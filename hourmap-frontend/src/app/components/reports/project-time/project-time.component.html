@@ -1,0 +1,72 @@
+<div class="container mt-3">
+  <p>View the total hours users have worked on a specific project.</p>
+
+  <!-- Filters -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+      <div class="me-3">
+        <label for="projectSelect" class="form-label">Project</label>
+        <select
+          id="projectSelect"
+          class="form-select"
+          [(ngModel)]="selectedProjectId"
+        >
+          <option
+            *ngFor="let project of organization.projects"
+            [value]="project.id"
+          >
+            {{ project.name }}
+          </option>
+        </select>
+      </div>
+      <div class="me-3">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          [(ngModel)]="startDate"
+          class="form-control"
+        />
+      </div>
+      <div>
+        <label for="endDate" class="form-label">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          [(ngModel)]="endDate"
+          class="form-control"
+        />
+      </div>
+    </div>
+    <button
+      class="btn btn-primary"
+      [disabled]="!selectedProjectId || !startDate || !endDate"
+      (click)="fetchProjectReport()"
+    >
+      Generate Report
+    </button>
+  </div>
+
+  <!-- Results Table -->
+  <table class="table table-striped mt-4" *ngIf="projectReport.length > 0">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Total Hours</th>
+        <th>Pay Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of projectReport">
+        <td>{{ entry.userName }}</td>
+        <td>{{ entry.totalHours | number : "1.2-2" }}</td>
+        <td>{{ entry.payRate | currency }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- No Results Message -->
+  <p *ngIf="projectReport.length === 0 && reportGenerated">
+    No data found for the selected project and date range.
+  </p>
+</div>

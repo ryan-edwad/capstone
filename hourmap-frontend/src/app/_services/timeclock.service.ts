@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Project } from '../_models/project';
 import { WorkLocation } from '../_models/work-location';
 import { TimeclockEntry } from '../_models/timeclock-entry';
+import { PayrollObject } from '../_models/payroll-object';
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +17,16 @@ export class TimeclockService {
   constructor() { }
 
   getTimeEntriesByUserAndDateRange(userId: string, startDate?: Date, endDate?: Date) {
-    var timeEntriesUrl = `${this.baseUrl}/${userId}`;
+    var timeEntriesUrl = `${this.baseUrl}/entries-by-uid-and-dates/${userId}`;
     if (startDate && endDate) {
       timeEntriesUrl += `?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`;
     }
-    return this.http.get(timeEntriesUrl);
+    return this.http.get<TimeclockEntry[]>(timeEntriesUrl);
 
   }
 
   getOrganizationDetails(orgId: number): Observable<any> {
-    var organizationUrl = `${environment.apiUrl}organization/${orgId}`;
+    var organizationUrl = `${environment.apiUrl}organization/get/${orgId}`;
     return this.http.get(organizationUrl);
   }
 
@@ -56,5 +57,15 @@ export class TimeclockService {
   getTimeEntriesByDates(startDate: string, endDate: string): Observable<TimeclockEntry[]> {
     return this.http.get<TimeclockEntry[]>(`${this.baseUrl}/get-user-entries-by-dates?startDate=${startDate}&endDate=${endDate}`);
   }
+
+  getPayrollReport(startDate: string, endDate: string): Observable<PayrollObject[]> {
+    return this.http.get<PayrollObject[]>(`${this.baseUrl}/payroll-report?startDate=${startDate}&endDate=${endDate}`);
+  }
+
+  getProjectReport(projectId: number, startDate: string, endDate: string) {
+    const url = `${this.baseUrl}/project-report/${projectId}?startDate=${startDate}&endDate=${endDate}`;
+    return this.http.get<PayrollObject[]>(url);
+  }
+
 
 }

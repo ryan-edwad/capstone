@@ -9,7 +9,9 @@ public class TimeEntry
     public int? ProjectId { get; set; }
     public int? LocationId { get; set; }
     public string? Duration { get; set; }
+    public int OrganizationId { get; set; }
 
     // Navigation Properties
     public ApplicationUser User { get; set; } = null!;
+    public Organization Organization { get; set; } = null!;
 }

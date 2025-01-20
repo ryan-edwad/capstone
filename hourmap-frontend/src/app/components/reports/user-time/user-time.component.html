@@ -1,0 +1,98 @@
+<div class="container mt-3">
+  <p>View time entries for a single user within a date range.</p>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center">
+      <div class="position-relative me-3" style="width: 200px">
+        <label for="userSelect" class="form-label">User</label>
+
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="searchText"
+          placeholder="Search users..."
+          (input)="filterUsers($event)"
+          style="width: 100%"
+        />
+        <ul
+          class="list-group position-absolute bg-white"
+          style="
+            max-height: 100px;
+            overflow-y: auto;
+            z-index: 10;
+            display: block;
+            width: 100%;
+          "
+        >
+          <li *ngFor="let user of filteredUsers" class="list-group-item">
+            <a class="dropdown-item" (click)="selectUser(user)">
+              {{ user.firstName }} {{ user.lastName }}
+            </a>
+          </li>
+          <li
+            *ngIf="filteredUsers.length === 0 && searchStarted"
+            class="list-group-item text-muted"
+          >
+            No results found
+          </li>
+        </ul>
+      </div>
+
+      <div class="me-3">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          [(ngModel)]="startDate"
+          class="form-control"
+        />
+      </div>
+
+      <div>
+        <label for="endDate" class="form-label">End Date</label>
+        <input
+          type="date"
+          id="endDate"
+          [(ngModel)]="endDate"
+          class="form-control"
+        />
+      </div>
+    </div>
+
+    <button
+      class="btn btn-primary mt-4"
+      [disabled]="!selectedUserId || !startDate || !endDate"
+      (click)="fetchUserTimeEntries()"
+    >
+      Generate Report
+    </button>
+  </div>
+
+  <!-- Results Table -->
+  <table class="table table-striped mt-4" *ngIf="userTimeEntries.length > 0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Time In</th>
+        <th>Time Out</th>
+        <th>Duration</th>
+        <th>Location</th>
+        <th>Project</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of userTimeEntries">
+        <td>{{ entry.clockIn | date : "shortDate" }}</td>
+        <td>{{ entry.clockIn | date : "mediumTime" }}</td>
+        <td>{{ entry.clockOut | date : "mediumTime" }}</td>
+        <td>{{ entry.numDuration | number : "1.2-2" }} hours</td>
+        <td>{{ entry.locationId }}</td>
+        <td>{{ entry.projectId }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- No Entries Message -->
+  <p *ngIf="userTimeEntries.length === 0 && reportGenerated">
+    No time entries found for the selected user and date range.
+  </p>
+</div>

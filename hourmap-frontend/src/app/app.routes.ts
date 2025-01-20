@@ -4,6 +4,7 @@ import { NewOrganizationComponent } from './components/new-organization/new-orga
 import { OrganizationDashboardComponent } from './components/organization-dashboard/organization-dashboard.component';
 import { authGuard } from './_guards/auth.guard';
 import { TimeclockComponent } from './components/timeclock/timeclock.component';
+import { ReportsComponent } from './components/reports/reports.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -26,5 +27,12 @@ export const routes: Routes = [
         component: TimeclockComponent,
         canActivate: [authGuard],
         data: { roles: ['Manager', 'Admin', 'Employee'] }
+    },
+    {
+        path: 'reports',
+        component: ReportsComponent,
+        canActivate: [authGuard],
+        data: { roles: ['Manager', 'Admin'] }
     }
+
 ];

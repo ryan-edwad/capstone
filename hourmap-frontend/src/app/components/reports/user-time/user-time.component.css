@@ -1,0 +1,12 @@
+/* Ensure the dropdown does not overflow or affect layout */
+.list-group {
+  position: absolute;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.container .form-label {
+  font-weight: bold;
+  font-size: 14px;
+}

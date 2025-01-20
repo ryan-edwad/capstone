@@ -107,6 +107,12 @@ export class TimeclockComponent implements OnDestroy {
       this.timeClockService.clockIn(selectedProjectId, selectedLocationId).subscribe({
         next: (response) => {
           this.clockedIn = true;
+
+          this.clockForm.patchValue({
+            project: response.projectId,
+            location: response.locationId
+          });
+
           console.log('Clock in successful!', response);
           this.loadTimeEntriesForPayPeriod();
         },
@@ -118,6 +124,13 @@ export class TimeclockComponent implements OnDestroy {
     else {
       const lastEntry = this.timeEntries[this.timeEntries.length - 1];
       const timeEntryId = lastEntry.id;
+
+      if (this.locations.length > 0) {
+        this.clockForm.patchValue({ location: this.locations[0].id });
+      }
+      if (this.projects.length > 0) {
+        this.clockForm.patchValue({ project: this.projects[0].id });
+      }
 
       this.timeClockService.clockOut(timeEntryId).subscribe({
         next: (response) => {
@@ -210,14 +223,15 @@ export class TimeclockComponent implements OnDestroy {
 
   updateDisplayedEntries() {
     if (this.selectedTimeRange === 'today') {
-      this.displayedEntries = this.timeEntries.filter(entry =>
-        this.isSameDay(new Date(entry.clockIn), new Date())
+      const today = new Date();
+      this.filteredTimeEntries = this.timeEntries.filter(entry =>
+        this.isSameDay(new Date(entry.clockIn), today)
       );
     } else if (this.selectedTimeRange === 'payPeriod') {
-      this.displayedEntries = this.timeEntries;
+      this.filteredTimeEntries = [...this.timeEntries];
     }
 
-    this.totalDuration = this.displayedEntries.reduce((total, entry) => {
+    this.totalDuration = this.filteredTimeEntries.reduce((total, entry) => {
       const durationInDecimal = this.convertIsoToDecimalHours(entry.duration || 'PT0H0M0S');
       return total + durationInDecimal;
     }, 0);

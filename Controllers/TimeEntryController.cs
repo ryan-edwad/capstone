@@ -27,12 +27,15 @@ public class TimeEntryController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized("Invalid user id");
+        var organizationId = User.FindFirstValue("OrganizationId");
+        if (organizationId is null) return Unauthorized("Invalid organization id");
         var timeEntry = new TimeEntry
         {
             UserId = userId,
             ClockIn = DateTime.UtcNow,
             ProjectId = projectId.HasValue ? projectId : null,
-            LocationId = locationId.HasValue ? locationId : null
+            LocationId = locationId.HasValue ? locationId : null,
+            OrganizationId = int.Parse(organizationId)
         };
         var result = await _context.TimeEntries.AddAsync(timeEntry);
         if (result == null)
@@ -273,7 +276,7 @@ public class TimeEntryController : ControllerBase
         var results = await query.ToListAsync();
         if (results.Count == 0)
         {
-            return NotFound(new { message = "No time entries found for the given user id and date range", userId, startDate, endDate });
+            return NotFound(new { message = "No time entries found for date range", userId, startDate, endDate });
         }
 
         var timeEntryDtos = results.Select(te => new TimeEntryDto
@@ -288,6 +291,108 @@ public class TimeEntryController : ControllerBase
         });
 
         return Ok(timeEntryDtos);
+    }
+
+    [HttpGet("payroll-report")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
+    public async Task<IActionResult> GetPayrollReport(DateTime startDate, DateTime endDate)
+    {
+        if (startDate > endDate)
+        {
+            return BadRequest("Start date cannot be later than end date");
+        }
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null || user.OrganizationId == null)
+        {
+            return Unauthorized("User is not associated with an organization");
+        }
+
+        var organizationId = user.OrganizationId.Value;
+
+        var timeEntries = await _context.TimeEntries
+            .Where(te => te.OrganizationId == organizationId
+            && te.ClockIn >= startDate
+            && te.ClockOut <= endDate)
+            .Include(te => te.User)
+            .ToListAsync();
+
+        var payrollData = timeEntries
+            .GroupBy(te => te.UserId)
+            .Select(g => new PayRollReportDto
+            {
+                UserId = g.Key,
+                UserName = g.First().User.Email ?? "Unknown",
+                TotalHours = g.Sum(te => (te.ClockOut - te.ClockIn)?.TotalHours ?? 0),
+                PayRate = g.First().User.PayRate ?? 0
+            }).ToList();
+
+        return Ok(payrollData);
+    }
+
+    [HttpGet("entries-by-uid-and-dates/{userId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
+    public async Task<IActionResult> GetEntriesByUserIdAndDates(string userId, DateTime startDate, DateTime endDate)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null || user.OrganizationId == null)
+        {
+            return Unauthorized("User is not associated with an organization");
+        }
+
+        var organizationId = user.OrganizationId.Value;
+
+        var timeEntries = await _context.TimeEntries
+            .Where(te => te.OrganizationId == organizationId
+            && te.UserId == userId
+            && te.ClockIn >= startDate
+            && (te.ClockOut <= endDate || te.ClockOut == null))
+            .Include(te => te.User)
+            .ToListAsync();
+
+        var timeEntryDtos = timeEntries.Select(te => new TimeEntryDto
+        {
+            Id = te.Id,
+            UserId = te.UserId,
+            ClockIn = te.ClockIn,
+            ClockOut = te.ClockOut,
+            Duration = te.Duration,
+            ProjectId = te.ProjectId,
+            LocationId = te.LocationId
+        });
+
+        return Ok(timeEntryDtos);
+    }
+
+    [HttpGet("project-report/{projectId}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
+    public async Task<IActionResult> GetProjectReport(int projectId, DateTime startDate, DateTime endDate)
+    {
+        var organizationId = User.FindFirstValue("OrganizationId");
+        if (string.IsNullOrEmpty(organizationId))
+        {
+            return Unauthorized("User is not part of an organization.");
+        }
+
+        var reportData = await _context.TimeEntries
+            .Where(te => te.ProjectId == projectId
+                         && te.OrganizationId == int.Parse(organizationId)
+                         && te.ClockIn >= startDate
+                         && te.ClockOut <= endDate)
+            .GroupBy(te => te.UserId)
+            .ToListAsync();
+
+        var results = reportData
+            .Select(g => new PayRollReportDto
+            {
+                UserId = g.Key,
+                UserName = g.First().User.Email ?? "Unknown",
+                TotalHours = g.Sum(te => (te.ClockOut - te.ClockIn)?.TotalHours ?? 0),
+                PayRate = g.First().User.PayRate ?? 0
+            }).ToList();
+
+        return Ok(results);
     }
 
 }

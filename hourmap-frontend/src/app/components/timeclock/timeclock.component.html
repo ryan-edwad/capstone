@@ -66,7 +66,7 @@
             <option value="today">Today</option>
             <option value="payPeriod">Pay Period</option>
           </select>
-          <span *ngIf="totalDuration > 0" class="total-duration"
+          <span class="total-duration"
             >Total Duration: {{ totalDuration | number : "1.1-2" }} hours</span
           >
         </div>
@@ -82,7 +82,7 @@
           </thead>
           <tbody>
             <tr
-              *ngFor="let entry of timeEntries"
+              *ngFor="let entry of filteredTimeEntries"
               [class.incomplete]="!entry.clockOut"
             >
               <td>{{ entry.clockIn | date : "shortDate" }}</td>
