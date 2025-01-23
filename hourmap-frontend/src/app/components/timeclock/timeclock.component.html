@@ -70,40 +70,51 @@
             >Total Duration: {{ totalDuration | number : "1.1-2" }} hours</span
           >
         </div>
-
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Time In</th>
-              <th>Time Out</th>
-              <th>Duration</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let entry of filteredTimeEntries"
-              [class.incomplete]="!entry.clockOut"
+        <div style="max-height: 300px; overflow-y: auto">
+          <table
+            class="table table-striped"
+            style="width: 100%; border-collapse: collapse"
+          >
+            <thead
+              style="
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 1;
+              "
             >
-              <td>{{ entry.clockIn | date : "shortDate" }}</td>
-              <td>
-                <span [matTooltip]="(entry.clockIn | date : 'medium') ?? ''">
-                  {{ entry.clockIn | date : "mediumTime" }}
-                </span>
-              </td>
-              <td>
-                <span
-                  *ngIf="entry.clockOut"
-                  [matTooltip]="(entry.clockOut | date : 'medium') ?? ''"
-                >
-                  {{ entry.clockOut | date : "mediumTime" }}
-                </span>
-                <span *ngIf="!entry.clockOut">N/A</span>
-              </td>
-              <td>{{ (entry.numDuration | number : "1.1-2") || "..." }}</td>
-            </tr>
-          </tbody>
-        </table>
+              <tr>
+                <th>Date</th>
+                <th>Time In</th>
+                <th>Time Out</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let entry of filteredTimeEntries"
+                [class.incomplete]="!entry.clockOut"
+              >
+                <td>{{ entry.clockIn | date : "shortDate" }}</td>
+                <td>
+                  <span [matTooltip]="(entry.clockIn | date : 'medium') ?? ''">
+                    {{ entry.clockIn | date : "mediumTime" }}
+                  </span>
+                </td>
+                <td>
+                  <span
+                    *ngIf="entry.clockOut"
+                    [matTooltip]="(entry.clockOut | date : 'medium') ?? ''"
+                  >
+                    {{ entry.clockOut | date : "mediumTime" }}
+                  </span>
+                  <span *ngIf="!entry.clockOut">N/A</span>
+                </td>
+                <td>{{ (entry.numDuration | number : "1.1-2") || "..." }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

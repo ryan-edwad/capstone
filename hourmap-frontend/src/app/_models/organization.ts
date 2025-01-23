@@ -1,3 +1,4 @@
+import { Invitation } from "./invitation";
 import { OrgUser } from "./org-user";
 import { Project } from "./project";
 import { WorkLocation } from "./work-location";
@@ -9,4 +10,5 @@ export interface Organization {
     users: OrgUser[],
     projects: Project[],
     locations: WorkLocation[]
+    invitations: Invitation[]
 }

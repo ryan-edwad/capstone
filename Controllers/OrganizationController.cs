@@ -71,6 +71,7 @@ public class OrganizationController : ControllerBase
             .Include(o => o.Users)
             .Include(o => o.Projects)
             .Include(o => o.Locations)
+            .Include(o => o.Invitations)
             .FirstOrDefaultAsync(o => o.Id == id);
         if (organization == null) return NotFound(new { message = "Organization not found", id });
 
@@ -123,6 +124,14 @@ public class OrganizationController : ControllerBase
                 City = string.IsNullOrWhiteSpace(l.City) ? "" : l.City,
                 State = string.IsNullOrWhiteSpace(l.State) ? "" : l.State,
                 Description = string.IsNullOrWhiteSpace(l.Description) ? "" : l.Description
+            }).ToList(),
+            Invitations = organization.Invitations.Select(i => new InvitationDto
+            {
+                Id = i.Id,
+                Email = i.Email,
+                OrganizationId = i.OrganizationId,
+                Token = i.Token,
+                ExpirationDate = i.ExpirationDate
             }).ToList()
         };
 

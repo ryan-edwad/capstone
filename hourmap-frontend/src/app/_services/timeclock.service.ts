@@ -30,12 +30,14 @@ export class TimeclockService {
     return this.http.get(organizationUrl);
   }
 
-  clockIn(project?: Project, location?: WorkLocation): Observable<TimeclockEntry> {
-    const params: any = {};
-    if (project) params.projectId = project.id;
-    if (location) params.locationId = location.id;
+  clockIn(projectId?: number, locationId?: number): Observable<any> {
+    const payload = {
+      projectId: projectId || null,
+      locationId: locationId || null
+    }
+    console.log('Payload being sent: ', payload);
 
-    return this.http.post<TimeclockEntry>(`${this.baseUrl}/clock-in/`, { params });
+    return this.http.post<TimeclockEntry>(`${this.baseUrl}/clock-in/`, payload);
   }
 
   clockOut(timeEntryId: number): Observable<TimeclockEntry> {

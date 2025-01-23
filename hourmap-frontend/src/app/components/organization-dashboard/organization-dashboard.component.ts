@@ -17,6 +17,7 @@ import { AddLocationComponent } from '../add-location/add-location.component';
 import { AssignProjectComponent } from '../assign-project/assign-project.component';
 import { FormsModule } from '@angular/forms';
 import { EditLocationComponent } from '../edit-location/edit-location.component';
+import { OrganizationDataService } from '../../_services/organization-data.service';
 
 @Component({
   selector: 'app-organization-dashboard',
@@ -26,7 +27,7 @@ import { EditLocationComponent } from '../edit-location/edit-location.component'
   styleUrl: './organization-dashboard.component.css'
 })
 export class OrganizationDashboardComponent {
-  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [] };;
+  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [], invitations: [] };
   selectedUser: OrgUser | null = null;
   selectedInvitation: Invitation | null = null;
   selectedProject: Project | null = null;
@@ -41,7 +42,7 @@ export class OrganizationDashboardComponent {
   searchInvitationsQuery: string = '';
   searchProjectsQuery: string = '';
 
-  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog) { }
+  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog, private organizationDataService: OrganizationDataService) { }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -84,42 +85,21 @@ export class OrganizationDashboardComponent {
       this.router.navigate(['/login']); // Go back to login bro
     }
 
-    this.getOrganization(organizationId);
-
-    this.getInvitations();
-  }
-
-  // Get the organization data
-  getOrganization(organizationId: number) {
-    this.organizationService.getOrganization(organizationId).subscribe({
+    this.organizationDataService.getOrganization(organizationId).subscribe({
       next: (data) => {
         this.organization = {
           ...data,
           users: data.users || [],
           projects: data.projects || [],
-          locations: data.locations || []
-        },
-          this.filteredProjects = this.organization.projects;
-        this.filteredUsers = this.organization.users;
-        console.log('Loading organization:', this.organization);
+          locations: data.locations || [],
+          invitations: data.invitations || []
+        };
+        this.filteredProjects = [...this.organization.projects];
+        this.filteredUsers = [...this.organization.users];
+        this.filteredInvitations = [...this.organization.invitations];
+        console.log('Loaded organization data:', this.organization);
       },
-      error: (err) => console.error('Failed to load organization: ', err)
-    });
-
-  }
-
-  // Get invitations for an organization
-  getInvitations() {
-    this.organizationService.getInvitations().subscribe({
-      next: (data: Invitation[]) => {
-        this.invitations = data;
-        console.log('Loaded invitations:', this.invitations);
-        this.filteredInvitations = this.invitations;
-      },
-      error: (err) => {
-        console.error('Failed to load invitations:', err)
-        if (err.error?.message) { console.error(err.error.message); }
-      }
+      error: (err) => console.error('Failed to load organization data:', err)
     });
   }
 
@@ -172,6 +152,7 @@ export class OrganizationDashboardComponent {
       console.log('Edit user dialog closed:', result);
       if (result === true) {
         console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
         this.refreshOrganization();
       }
     });
@@ -253,7 +234,22 @@ export class OrganizationDashboardComponent {
       return;
     }
 
-    this.organizationService.getOrganization(organizationId).subscribe({
+    // this.organizationService.getOrganization(organizationId).subscribe({
+    //   next: (data) => {
+    //     this.organization = {
+    //       ...data,
+    //       users: data.users || [],
+    //       projects: data.projects || [],
+    //       locations: data.locations || []
+    //     };
+    //     console.log('Organization data refreshed:', this.organization);
+    //   },
+    //   error: (err) => console.error('Failed to refresh organization data:', err)
+    // });
+
+    // Moving toward a cached service instead
+    this.organizationDataService.clearCache(organizationId);
+    this.organizationDataService.getOrganization(organizationId).subscribe({
       next: (data) => {
         this.organization = {
           ...data,
@@ -261,12 +257,12 @@ export class OrganizationDashboardComponent {
           projects: data.projects || [],
           locations: data.locations || []
         };
+        this.filteredProjects = [...this.organization.projects];
+        this.filteredUsers = [...this.organization.users];
         console.log('Organization data refreshed:', this.organization);
       },
       error: (err) => console.error('Failed to refresh organization data:', err)
     });
-
-
 
   }
 
@@ -282,6 +278,7 @@ export class OrganizationDashboardComponent {
       console.log('Dialog closed!');
       if (result === true) {
         console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
         this.refreshOrganization();
       }
     });
@@ -298,6 +295,7 @@ export class OrganizationDashboardComponent {
       console.log('Edit project dialog closed:', result);
       if (result === true) {
         console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
         this.refreshOrganization();
       }
     });
@@ -320,6 +318,7 @@ export class OrganizationDashboardComponent {
       if (result === true) {
         console.log('Updated project users! Nice!');
         console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
         this.refreshOrganization();
       } else {
         console.log('Closed without saving project users.');
@@ -337,6 +336,7 @@ export class OrganizationDashboardComponent {
       this.organizationService.updateProject(this.selectedProject).subscribe({
         next: (data) => {
           console.log(data);
+          this.organizationDataService.clearCache(this.organization.id);
           this.refreshOrganization();
           this.selectedProject = null;
         },
@@ -383,6 +383,7 @@ export class OrganizationDashboardComponent {
       console.log('Add location dialog closed:', result);
       if (result === true) {
         console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
         this.refreshOrganization();
       }
     });
@@ -401,7 +402,8 @@ export class OrganizationDashboardComponent {
       console.log('Edit location dialog closed:', result);
       if (result === true) {
         console.log('Refreshing organization data');
-        this.refreshOrganization
+        this.organizationDataService.clearCache(this.organization.id);
+        this.refreshOrganization();
       }
     });
   }

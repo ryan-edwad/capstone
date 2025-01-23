@@ -92,6 +92,7 @@ public class LocationController : ControllerBase
 
         var locationDtos = locations.Select(l => new LocationDto
         {
+            Id = l.Id,
             Name = l.Name,
             Address = l.Address,
             City = l.City,

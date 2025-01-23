@@ -25,7 +25,7 @@ export class UserTimeComponent implements OnInit {
   filteredUsers: OrgUser[] = [];
   reportGenerated: boolean = false;
   timeClockService = inject(TimeclockService);
-  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [] };
+  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [], invitations: [] };
 
   constructor(private router: Router) { }
   ngOnInit() {

@@ -8,5 +8,6 @@ public class OrganizationDto
     public List<ApplicationUserDto> Users { get; set; } = new List<ApplicationUserDto>();
     public List<ProjectDto> Projects { get; set; } = new List<ProjectDto>();
     public List<LocationDto> Locations { get; set; } = new List<LocationDto>();
+    public List<InvitationDto> Invitations { get; set; } = new List<InvitationDto>();
 
 }

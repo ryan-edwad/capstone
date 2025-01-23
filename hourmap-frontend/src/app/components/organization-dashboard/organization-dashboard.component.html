@@ -114,13 +114,7 @@
 
     <!--Invitations Tab-->
     <div class="tab-pane fade" id="invitations-tab">
-      <div
-        *ngIf="
-          invitations && invitations.length > 0;
-          else noInvitations;
-          else: noInvitations
-        "
-      >
+      <div>
         <div
           class="d-flex justify-content-between align-items-center mt-3 mb-3"
         >
@@ -148,36 +142,44 @@
             />
           </div>
         </div>
-        <table
-          class="table table-striped"
-          *ngIf="filteredInvitations && filteredInvitations.length > 0"
+        <div
+          *ngIf="
+            invitations && invitations.length > 0;
+            else noInvitations;
+            else: noInvitations
+          "
         >
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Token</th>
-              <th>Expiration Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              *ngFor="let invitation of filteredInvitations"
-              [class.table-primary]="selectedInvitation === invitation"
-              (click)="selectInvitation(invitation)"
-            >
-              <td>{{ invitation.email }}</td>
-              <td>{{ invitation.token }}</td>
-              <td>{{ invitation.expirationDate | date : "medium" }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div *ngIf="filteredInvitations?.length === 0">
-          <p>No invitations found. Please adjust your search.</p>
+          <table
+            class="table table-striped"
+            *ngIf="filteredInvitations && filteredInvitations.length > 0"
+          >
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Token</th>
+                <th>Expiration Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let invitation of filteredInvitations"
+                [class.table-primary]="selectedInvitation === invitation"
+                (click)="selectInvitation(invitation)"
+              >
+                <td>{{ invitation.email }}</td>
+                <td>{{ invitation.token }}</td>
+                <td>{{ invitation.expirationDate | date : "medium" }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div *ngIf="filteredInvitations?.length === 0 && !noInvitations">
+            <p>No invitations found. Please adjust your search.</p>
+          </div>
         </div>
+        <ng-template #noInvitations>
+          <p>No invitations yet. Send an invitation to get started!</p>
+        </ng-template>
       </div>
-      <ng-template #noInvitations>
-        <p>No invitations yet. Send an invitation to get started!</p>
-      </ng-template>
     </div>
 
     <!--Projects Tab-->
@@ -329,9 +331,6 @@
       </table>
       <div *ngIf="organization?.locations?.length === 0">
         <p>No locations yet. Add locations to get started!</p>
-      </div>
-      <div *ngIf="filteredInvitations?.length === 0">
-        <p>No invitations found. Please adjust your search.</p>
       </div>
     </div>
   </div>

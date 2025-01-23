@@ -23,18 +23,19 @@ public class TimeEntryController : ControllerBase
 
     [HttpPost("clock-in")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
-    public async Task<IActionResult> ClockIn(int? projectId, int? locationId)
+    public async Task<IActionResult> ClockIn([FromBody] ClockInDto clockInDto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized("Invalid user id");
         var organizationId = User.FindFirstValue("OrganizationId");
         if (organizationId is null) return Unauthorized("Invalid organization id");
+
         var timeEntry = new TimeEntry
         {
             UserId = userId,
             ClockIn = DateTime.UtcNow,
-            ProjectId = projectId.HasValue ? projectId : null,
-            LocationId = locationId.HasValue ? locationId : null,
+            ProjectId = clockInDto.ProjectId,
+            LocationId = clockInDto.LocationId,
             OrganizationId = int.Parse(organizationId)
         };
         var result = await _context.TimeEntries.AddAsync(timeEntry);
@@ -375,24 +376,34 @@ public class TimeEntryController : ControllerBase
             return Unauthorized("User is not part of an organization.");
         }
 
-        var reportData = await _context.TimeEntries
+        var timeEntries = await _context.TimeEntries
             .Where(te => te.ProjectId == projectId
                          && te.OrganizationId == int.Parse(organizationId)
                          && te.ClockIn >= startDate
                          && te.ClockOut <= endDate)
-            .GroupBy(te => te.UserId)
+            .Include(te => te.User)
             .ToListAsync();
+
+        if (timeEntries.Count == 0)
+        {
+            return NotFound("No time entries found for the specified project and date range.");
+        }
+
+        var reportData = timeEntries
+            .GroupBy(te => te.UserId)
+            .ToList();
 
         var results = reportData
             .Select(g => new PayRollReportDto
             {
                 UserId = g.Key,
-                UserName = g.First().User.Email ?? "Unknown",
-                TotalHours = g.Sum(te => (te.ClockOut - te.ClockIn)?.TotalHours ?? 0),
-                PayRate = g.First().User.PayRate ?? 0
+                UserName = g.FirstOrDefault()?.User?.Email ?? "Unknown",
+                TotalHours = g.Sum(te => te.ClockOut.HasValue
+                                        ? (te.ClockOut.Value - te.ClockIn).TotalHours : 0),
+                PayRate = g.FirstOrDefault()?.User?.PayRate ?? 0
             }).ToList();
 
         return Ok(results);
-    }
 
+    }
 }

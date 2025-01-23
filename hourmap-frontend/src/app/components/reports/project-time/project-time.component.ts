@@ -21,7 +21,7 @@ export class ProjectTimeComponent implements OnInit {
   reportGenerated: boolean = false;
   startDate: string = '';
   endDate: string = '';
-  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [] };
+  organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [], invitations: [] };
 
   constructor(private router: Router) { }
 
@@ -46,7 +46,9 @@ export class ProjectTimeComponent implements OnInit {
     }
 
     this.getOrganization(organizationId);
+
   }
+
   fetchProjectReport() {
     if (!this.selectedProjectId || !this.startDate || !this.endDate) return;
 
@@ -73,6 +75,9 @@ export class ProjectTimeComponent implements OnInit {
           projects: data.projects || []
         };
         console.log('Loading organization:', this.organization);
+        if (this.organization.projects.length > 0) {
+          this.selectedProjectId = this.organization.projects[0].id;
+        }
       },
       error: (err) => console.error('Failed to load organization: ', err)
     });

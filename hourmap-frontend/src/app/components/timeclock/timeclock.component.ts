@@ -46,31 +46,14 @@ export class TimeclockComponent implements OnDestroy {
       this.currentTime = new Date();
     });
 
-    this.timeClockService.getRecentEntry().subscribe({
-      next: (response) => {
-        if (response && !response.clockOut) {
-          this.clockedIn = true;
-          this.clockForm.patchValue({
-            location: response.locationId,
-            project: response.projectId
-          });
-        }
-        else {
-          this.clockForm.patchValue({
-            location: this.locations[0],
-            project: this.projects[0]
-          })
-        }
-      },
-      error: (err) => {
-        console.error('Error getting recent time entry', err);
-      }
-    });
+    this.getRecentEntry();
 
     this.timeClockService.getLocations().subscribe({
       next: (locations) => {
+        console.log('Fetched Locations:', locations);
         this.locations = locations;
         if (locations.length > 0) {
+          console.log('Setting default location ID:', locations[0].id);
           this.clockForm.patchValue({ location: locations[0].id });
         }
       },
@@ -79,8 +62,10 @@ export class TimeclockComponent implements OnDestroy {
 
     this.timeClockService.getProjectsByUser().subscribe({
       next: (projects) => {
+        console.log('Fetched Projects:', projects);
         this.projects = projects
         if (projects.length > 0) {
+          console.log('Setting default project ID:', projects[0].id);
           this.clockForm.patchValue({ project: projects[0].id });
         }
       },
@@ -101,36 +86,14 @@ export class TimeclockComponent implements OnDestroy {
     if (!this.clockedIn) {
       const selectedProjectId = this.clockForm.get('project')?.value;
       const selectedLocationId = this.clockForm.get('location')?.value;
-      console.log(selectedProjectId);
-      console.log(selectedLocationId);
+      this.clockIn(selectedProjectId, selectedLocationId);
 
-      this.timeClockService.clockIn(selectedProjectId, selectedLocationId).subscribe({
-        next: (response) => {
-          this.clockedIn = true;
-
-          this.clockForm.patchValue({
-            project: response.projectId,
-            location: response.locationId
-          });
-
-          console.log('Clock in successful!', response);
-          this.loadTimeEntriesForPayPeriod();
-        },
-        error: (err) => {
-          console.error('Error clocking in', err);
-        }
-      });
     }
     else {
       const lastEntry = this.timeEntries[this.timeEntries.length - 1];
       const timeEntryId = lastEntry.id;
-
-      if (this.locations.length > 0) {
-        this.clockForm.patchValue({ location: this.locations[0].id });
-      }
-      if (this.projects.length > 0) {
-        this.clockForm.patchValue({ project: this.projects[0].id });
-      }
+      this.clockForm.patchValue({ location: lastEntry.locationId });
+      this.clockForm.patchValue({ project: lastEntry.projectId });
 
       this.timeClockService.clockOut(timeEntryId).subscribe({
         next: (response) => {
@@ -138,6 +101,12 @@ export class TimeclockComponent implements OnDestroy {
           lastEntry.duration = this.calculateDuration(lastEntry.clockIn, lastEntry.clockOut ? lastEntry.clockOut : '');
           this.clockedIn = false;
           console.log('Clock out successful!', response);
+          if (this.locations.length > 0) {
+            this.clockForm.patchValue({ location: this.locations[0].id });
+          }
+          if (this.projects.length > 0) {
+            this.clockForm.patchValue({ project: this.projects[0].id });
+          }
           this.loadTimeEntriesForPayPeriod();
         },
         error: (err) => {
@@ -145,7 +114,53 @@ export class TimeclockComponent implements OnDestroy {
         }
       });
     }
-    this.clockForm.reset();
+  }
+
+  clockIn(selectedProjectId: number, selectedLocationId: number) {
+    this.timeClockService.clockIn(selectedProjectId, selectedLocationId).subscribe({
+      next: (response) => {
+        this.clockedIn = true;
+
+        const timeEntry = response.timeEntryDto;
+
+        console.log(timeEntry.locationId);
+        console.log(timeEntry.projectId)
+
+        this.clockForm.patchValue({
+          project: timeEntry.projectId,
+          location: timeEntry.locationId
+        });
+
+        console.log('Clock in successful!', response);
+        this.loadTimeEntriesForPayPeriod();
+      },
+      error: (err) => {
+        console.error('Error clocking in', err);
+      }
+    });
+  }
+
+  getRecentEntry() {
+    this.timeClockService.getRecentEntry().subscribe({
+      next: (response) => {
+        if (response && !response.clockOut) {
+          this.clockedIn = true;
+          this.clockForm.patchValue({
+            location: response.locationId || (this.locations[0].id ?? ''),
+            project: response.projectId || (this.projects[0].id ?? '')
+          });
+        }
+        else {
+          this.clockForm.patchValue({
+            location: this.locations[0]?.id,
+            project: this.projects[0]?.id
+          })
+        }
+      },
+      error: (err) => {
+        console.error('Error getting recent time entry', err);
+      }
+    });
   }
 
   calculateDuration(startTime: string, endTime: string): string {
