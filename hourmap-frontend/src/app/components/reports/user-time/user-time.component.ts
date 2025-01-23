@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrgUser } from '../../../_models/org-user';
+import { MatDialog } from '@angular/material/dialog';
+import { EditTimeComponent } from '../edit-time/edit-time.component';
 
 @Component({
   selector: 'app-user-time',
@@ -26,8 +28,9 @@ export class UserTimeComponent implements OnInit {
   reportGenerated: boolean = false;
   timeClockService = inject(TimeclockService);
   organization: Organization = { id: 0, name: 'Default Loaded, Check the Logs', createdAt: new Date(), users: [], projects: [], locations: [], invitations: [] };
+  selectedEntry: TimeclockEntry | null = null;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private dialog: MatDialog) { }
   ngOnInit() {
     console.log('User Time Component Initialized');
     const token = localStorage.getItem('authToken');
@@ -114,7 +117,7 @@ export class UserTimeComponent implements OnInit {
   }
 
   convertIsoToDecimalHours(durationIso: string): number {
-    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(\.\d+)?)S)?/;
+    const regex = /P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(\.\d+)?)S)?/;
     const matches = durationIso.match(regex);
 
     if (!matches) {
@@ -122,15 +125,20 @@ export class UserTimeComponent implements OnInit {
       return 0;
     }
 
-    const hours = parseFloat(matches[1] || '0');
-    const minutes = parseFloat(matches[2] || '0');
-    const seconds = parseFloat(matches[3] || '0');
+    const days = parseFloat(matches[1] || '0');
+    const hours = parseFloat(matches[2] || '0');
+    const minutes = parseFloat(matches[3] || '0');
+    const seconds = parseFloat(matches[4] || '0');
 
-    const decimalHours = hours + minutes / 60 + seconds / 3600;
+    // Convert the duration to decimal hours
+    const decimalHours = days * 24 + hours + minutes / 60 + seconds / 3600;
 
-    console.log(`Parsed Duration: ${hours}h ${minutes}m ${seconds}s => Decimal Hours: ${decimalHours}`);
+    console.log(
+      `Parsed Duration: ${days}d ${hours}h ${minutes}m ${seconds}s => Decimal Hours: ${decimalHours}`
+    );
     return decimalHours;
   }
+
 
   convertUtcToLocal(utcDate: string): string {
     const utcDateObj = new Date(utcDate);
@@ -138,6 +146,32 @@ export class UserTimeComponent implements OnInit {
 
     console.log(`UTC: ${utcDate}, Local: ${localDateObj.toLocaleString('en-US', { timeZoneName: 'short' })}`);
     return localDateObj.toLocaleString('en-US', { hour12: true });
+  }
+
+  editTimeEntry() {
+    if (!this.selectedEntry) {
+      console.error('No entry selected');
+      return;
+    }
+    const dialogRef = this.dialog.open(EditTimeComponent, {
+      width: '400px',
+      data: this.selectedEntry,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        console.log('Time entry updated successfully.');
+        this.selectedUserId = this.selectedEntry?.userId || null;
+        this.fetchUserTimeEntries(); // Reload the entries
+      }
+      this.selectedEntry = null;
+    });
+  }
+
+  selectEntry(entry: TimeclockEntry) {
+    this.selectedEntry = entry;
+    console.log('Selected Entry:', this.selectedEntry);
   }
 
 

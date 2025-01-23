@@ -1,1 +1,100 @@
-<p>edit-time works!</p>
+<div class="modal-header justify-content-between">
+    <h4 class="modal-title mt-3">Edit Time Entry</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="close()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="editTimeEntryForm" (ngSubmit)="submit()">
+      <!-- Clock In -->
+      <div class="form-group mb-3">
+        <label for="clockIn">Clock In</label>
+        <input
+          id="clockIn"
+          type="datetime-local"
+          class="form-control"
+          formControlName="clockIn"
+        />
+        <div
+          *ngIf="
+            editTimeEntryForm.get('clockIn')?.invalid &&
+            editTimeEntryForm.get('clockIn')?.touched
+          "
+          class="text-danger"
+        >
+          Please enter a valid clock-in time.
+        </div>
+      </div>
+  
+      <!-- Clock Out -->
+      <div class="form-group mb-3">
+        <label for="clockOut">Clock Out</label>
+        <input
+          id="clockOut"
+          type="datetime-local"
+          class="form-control"
+          formControlName="clockOut"
+        />
+        <div
+          *ngIf="
+            editTimeEntryForm.get('clockOut')?.invalid &&
+            editTimeEntryForm.get('clockOut')?.touched
+          "
+          class="text-danger"
+        >
+          Please enter a valid clock-out time.
+        </div>
+      </div>
+  
+      <!-- Project Dropdown -->
+      <div class="form-group mb-3">
+        <label for="project">Project</label>
+        <select
+          id="project"
+          class="form-control"
+          formControlName="projectId"
+        >
+          <option
+            *ngFor="let project of projects"
+            [value]="project.id"
+          >
+            {{ project.name }}
+          </option>
+        </select>
+      </div>
+  
+      <!-- Location Dropdown -->
+      <div class="form-group mb-3">
+        <label for="location">Location</label>
+        <select
+          id="location"
+          class="form-control"
+          formControlName="locationId"
+        >
+          <option
+            *ngFor="let location of locations"
+            [value]="location.id"
+          >
+            {{ location.name }}
+          </option>
+        </select>
+      </div>
+  
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mb-2"
+        [disabled]="editTimeEntryForm.invalid"
+      >
+        Save Changes
+      </button>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-danger w-100" (click)="close()">
+      Cancel
+    </button>
+  </div>
+  

@@ -61,7 +61,7 @@
       <button
         class="btn btn me-3"
         [disabled]="!selectedUserId || !startDate || !endDate"
-        (click)="fetchUserTimeEntries()"
+        (click)="editTimeEntry(selectedEntry)"
       >
         Edit Entry
       </button>
@@ -92,7 +92,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let entry of userTimeEntries">
+        <tr
+          *ngFor="let entry of userTimeEntries"
+          [class.table-active]="entry === selectedEntry"
+          (click)="selectEntry(entry)"
+        >
           <td>{{ entry.clockIn | date : "shortDate" }}</td>
           <td>{{ entry.clockIn | date : "mediumTime" }}</td>
           <td>{{ entry.clockOut | date : "mediumTime" }}</td>

@@ -243,5 +243,43 @@ public class ProjectController : ControllerBase
 
         return Ok(new { message = "Users assigned to project." });
     }
+
+    [HttpGet("get-projects-by-uid/{id}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
+    public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjectsByUserId(string id)
+    {
+        var userId = id;
+        if (userId == null)
+        {
+            return Unauthorized("Invalid user.");
+        }
+
+        var user = await _dbContext.Users.Include(u => u.UserProjects)
+                                         .FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null)
+        {
+            return Unauthorized("User not found.");
+        }
+
+        var organizationId = user.OrganizationId;
+        if (organizationId == null)
+        {
+            return BadRequest("User is not associated with an organization.");
+        }
+
+        var projects = await _dbContext.Projects
+            .Where(p => p.Enabled &&
+                        p.OrganizationId == organizationId &&
+                        p.UserProjects.Any(up => up.UserId == userId))
+            .Select(p => new ProjectDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Enabled = p.Enabled
+            }).ToListAsync();
+
+        return Ok(projects);
+    }
 }
 

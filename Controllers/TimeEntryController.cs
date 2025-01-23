@@ -91,35 +91,39 @@ public class TimeEntryController : ControllerBase
 
     }
 
-    [HttpPut("update/{id}")]
+    [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
-    public async Task<IActionResult> UpdateTimeEntry(int id, DateTime? clockIn, DateTime? clockOut, int? projectId, int? locationId)
+    public async Task<IActionResult> UpdateTimeEntry(TimeEntryDto timeEntry)
     {
-        var query = _context.TimeEntries.Where(te => te.Id == id);
+        var query = _context.TimeEntries.Where(te => te.Id == timeEntry.Id);
         var result = await query.FirstOrDefaultAsync();
         var timeChanged = false;
 
         if (result == null)
         {
-            return NotFound(new { message = "Invalid time entry Id", id });
+            return NotFound(new { message = "Invalid time entry Id", timeEntry.Id });
         }
-        if (clockIn.HasValue)
+
+        if (timeEntry.ClockIn != result.ClockIn)
         {
-            result.ClockIn = clockIn.Value.ToUniversalTime();
+            result.ClockIn = timeEntry.ClockIn.ToUniversalTime();
+            timeChanged = true;
+
+        }
+        if (timeEntry.ClockOut.HasValue && timeEntry.ClockOut != result.ClockOut)
+        {
+            result.ClockOut = timeEntry.ClockOut.Value.ToUniversalTime();
             timeChanged = true;
         }
-        if (clockOut.HasValue)
+        if (timeEntry.ProjectId.HasValue && timeEntry.ProjectId != result.ProjectId)
         {
-            result.ClockOut = clockOut.Value.ToUniversalTime();
+            result.ProjectId = timeEntry.ProjectId;
             timeChanged = true;
         }
-        if (projectId.HasValue)
+        if (timeEntry.LocationId.HasValue && timeEntry.LocationId != result.LocationId)
         {
-            result.ProjectId = projectId;
-        }
-        if (locationId.HasValue)
-        {
-            result.LocationId = locationId;
+            result.LocationId = timeEntry.LocationId;
+            timeChanged = true;
         }
 
         if (timeChanged)
@@ -131,7 +135,7 @@ public class TimeEntryController : ControllerBase
             }
             if (duration.Value.TotalSeconds < 0)
             {
-                return BadRequest(new { message = "Clock out time cannot be earlier than clock in time", clockIn, clockOut });
+                return BadRequest(new { message = "Clock out time cannot be earlier than clock in time", result.ClockIn, result.ClockOut });
             }
             var isoDuration = XmlConvert.ToString(duration.Value);
             result.Duration = isoDuration;
@@ -140,7 +144,7 @@ public class TimeEntryController : ControllerBase
         var updateResult = _context.TimeEntries.Update(result);
         if (updateResult == null)
         {
-            return BadRequest(new { message = "Failed to update time entry. Result is null.", id });
+            return BadRequest(new { message = "Failed to update time entry. Result is null.", timeEntry.Id });
         }
         await _context.SaveChangesAsync();
 

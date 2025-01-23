@@ -56,6 +56,10 @@ export class TimeclockService {
     return this.http.get<Project[]>(`${environment.apiUrl}project/get-projects-by-user`);
   }
 
+  getProjectsByUserId(userId: string): Observable<Project[]> {
+    return this.http.get<Project[]>(`${environment.apiUrl}project/get-projects-by-uid/${userId}`);
+  }
+
   getTimeEntriesByDates(startDate: string, endDate: string): Observable<TimeclockEntry[]> {
     return this.http.get<TimeclockEntry[]>(`${this.baseUrl}/get-user-entries-by-dates?startDate=${startDate}&endDate=${endDate}`);
   }
@@ -67,6 +71,10 @@ export class TimeclockService {
   getProjectReport(projectId: number, startDate: string, endDate: string) {
     const url = `${this.baseUrl}/project-report/${projectId}?startDate=${startDate}&endDate=${endDate}`;
     return this.http.get<PayrollObject[]>(url);
+  }
+
+  updateTimeEntry(updatedEntry: TimeclockEntry) {
+    return this.http.put<TimeclockEntry>(`${this.baseUrl}/update`, updatedEntry);
   }
 
 
