@@ -1,4 +1,5 @@
-<div class="container mt-5">
+<app-treasure-path-background></app-treasure-path-background>
+<div class="container page-container mt-5">
   <h1>{{ organization.name }}</h1>
   <p>Manage your organization here!</p>
   <ul class="nav nav-tabs">
@@ -32,18 +33,18 @@
       <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
         <!-- Left: Buttons -->
         <div>
-          <button class="btn btn-primary btn-block" (click)="addUser()">
+          <button class="btn-custom success btn-block" (click)="addUser()">
             Add User
           </button>
           <button
-            class="btn btn-warning btn-block ms-2"
+            class="btn-custom primary btn-block ms-2"
             [disabled]="!selectedUser"
             (click)="editUser()"
           >
             Edit User
           </button>
           <button
-            class="btn btn-danger btn-block ms-2"
+            class="btn-custom danger btn-block ms-2"
             [disabled]="!selectedUser"
             (click)="disableUser()"
           >
@@ -119,11 +120,15 @@
           class="d-flex justify-content-between align-items-center mt-3 mb-3"
         >
           <div>
-            <button class="btn btn-primary btn-block" (click)="copyLink()">
+            <button
+              class="btn-custom success btn-block"
+              [disabled]="!selectedInvitation"
+              (click)="copyLink()"
+            >
               Copy Invite Link
             </button>
             <button
-              class="btn btn-danger btn-block ms-2"
+              class="btn-custom danger btn-block ms-2"
               [disabled]="!selectedInvitation"
               (click)="deleteInvite()"
             >
@@ -144,16 +149,23 @@
         </div>
         <div
           *ngIf="
-            invitations && invitations.length > 0;
-            else noInvitations;
-            else: noInvitations
+            filteredInvitations && filteredInvitations.length > 0;
+            else noInvitations
           "
+          style="max-height: 500px; overflow-y: auto"
         >
           <table
             class="table table-striped"
             *ngIf="filteredInvitations && filteredInvitations.length > 0"
           >
-            <thead>
+            <thead
+              style="
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 1;
+              "
+            >
               <tr>
                 <th>Email</th>
                 <th>Token</th>
@@ -172,7 +184,7 @@
               </tr>
             </tbody>
           </table>
-          <div *ngIf="filteredInvitations?.length === 0 && !noInvitations">
+          <div *ngIf="filteredInvitations?.length === 0">
             <p>No invitations found. Please adjust your search.</p>
           </div>
         </div>
@@ -186,35 +198,37 @@
     <div class="tab-pane fade" id="projects-tab">
       <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
         <div>
-          <button class="btn btn-primary btn-block" (click)="addProject()">
+          <button class="btn-custom success btn-block" (click)="addProject()">
             Add Project
           </button>
           <button
-            class="btn btn-warning btn-block ms-2"
+            class="btn-custom primary btn-block ms-2"
             [disabled]="!selectedProject"
             (click)="editProject()"
           >
             Edit Project
           </button>
           <button
-            class="btn btn-success btn-block ms-2"
-            [disabled]="!selectedProject"
-            (click)="assignProject()"
-          >
-            Assign Project
-          </button>
-          <button
             [ngClass]="
-              selectedProject?.enabled
-                ? 'btn btn-danger btn-block ms-2'
-                : 'btn btn-success btn-block ms-2'
+              selectedProject?.enabled === false
+                ? 'btn-custom success btn-block ms-2'
+                : 'btn-custom danger btn-block ms-2'
             "
             [disabled]="!selectedProject"
             (click)="changeProjectStatus()"
           >
             {{
-              selectedProject?.enabled ? " Disable Project" : "Enable Project"
+              selectedProject?.enabled === false
+                ? " Enable Project"
+                : "Disable Project"
             }}
+          </button>
+          <button
+            class="btn-custom secondary btn-block ms-2"
+            [disabled]="!selectedProject"
+            (click)="assignProject()"
+          >
+            Assign Project
           </button>
         </div>
         <div>
@@ -276,18 +290,18 @@
     <!--Locations Tab-->
     <div class="tab-pane fade" id="locations-tab">
       <div class="mt-3 mb-3">
-        <button class="btn btn-primary btn-block" (click)="addLocation()">
+        <button class="btn-custom success btn-block" (click)="addLocation()">
           Add Location
         </button>
         <button
-          class="btn btn-warning btn-block ms-2"
+          class="btn-custom primary btn-block ms-2"
           [disabled]="!selectedLocation"
           (click)="editLocation()"
         >
           Edit Location
         </button>
         <button
-          class="btn btn-danger btn-block ms-2"
+          class="btn-custom danger btn-block ms-2"
           [disabled]="!selectedLocation"
           (click)="deleteLocation()"
         >

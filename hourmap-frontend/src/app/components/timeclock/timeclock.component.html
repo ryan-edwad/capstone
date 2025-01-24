@@ -1,9 +1,8 @@
-<div class="timeclock-container container">
-  <!-- Row for Clock and Table -->
+<app-treasure-path-background></app-treasure-path-background>
+<div class="timeclock-container container page-container mt-5">
   <div class="row">
-    <!-- Left: Clock and Clock-In Form -->
+    <!-- Left Side: Clock and Clock-In Form -->
     <div class="col-md-6 border-end">
-      <!-- Clock -->
       <div class="clock-section text-left">
         <h1 class="live-clock">{{ currentTime | date : "mediumTime" }}</h1>
         <p class="live-date">{{ currentTime | date : "fullDate" }}</p>
@@ -20,7 +19,11 @@
               class="form-control"
               formControlName="location"
             >
-              <option *ngFor="let location of locations" [value]="location.id">
+              <option
+                *ngFor="let location of locations"
+                [value]="location.id"
+                [disabled]="clockedIn"
+              >
                 {{ location.name }}
               </option>
             </select>
@@ -28,22 +31,19 @@
           <div class="form-group mb-3">
             <label for="project">Project</label>
             <select id="project" class="form-control" formControlName="project">
-              <option *ngFor="let project of projects" [value]="project.id">
+              <option
+                *ngFor="let project of projects"
+                [value]="project.id"
+                [disabled]="clockedIn"
+              >
                 {{ project.name }}
               </option>
             </select>
           </div>
-          <div class="form-group mb-3">
-            <label for="role">Role</label>
-            <select id="role" class="form-control" formControlName="role">
-              <option *ngFor="let role of roles" [value]="role">
-                {{ role }}
-              </option>
-            </select>
-          </div>
+
           <button
             type="submit"
-            class="btn btn-primary w-100"
+            class="btn-custom success w-100 mt-3"
             [disabled]="!clockForm.valid"
           >
             {{ clockedIn ? "Clock Out" : "Clock In" }}
@@ -52,7 +52,7 @@
       </div>
     </div>
 
-    <!-- Right: Time Entries Table -->
+    <!-- Right Side: Time Entries Table -->
     <div class="col-md-6">
       <div class="time-entries-section">
         <h3 class="table-header">My Time Entries</h3>

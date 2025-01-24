@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { interval, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -7,11 +7,12 @@ import { WorkLocation } from '../../_models/work-location';
 import { TimeclockService } from '../../_services/timeclock.service';
 import { TimeclockEntry } from '../../_models/timeclock-entry';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TreasurePathBackgroundComponent } from '../treasure-path-background/treasure-path-background.component';
 
 @Component({
   selector: 'app-timeclock',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatTooltipModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, MatTooltipModule, TreasurePathBackgroundComponent],
   templateUrl: './timeclock.component.html',
   styleUrl: './timeclock.component.css'
 })
@@ -31,7 +32,7 @@ export class TimeclockComponent implements OnDestroy {
 
   private clockSubscription!: Subscription;
 
-  constructor(private fb: FormBuilder, timeClockService: TimeclockService) {
+  constructor(private fb: FormBuilder, timeClockService: TimeclockService, private cdr: ChangeDetectorRef) {
     this.clockForm = this.fb.group({
       location: [''],
       project: [''],
@@ -114,6 +115,7 @@ export class TimeclockComponent implements OnDestroy {
         }
       });
     }
+    this.cdr.detectChanges();
   }
 
   clockIn(selectedProjectId: number, selectedLocationId: number) {
@@ -156,6 +158,7 @@ export class TimeclockComponent implements OnDestroy {
             project: this.projects[0]?.id
           })
         }
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error getting recent time entry', err);

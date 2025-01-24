@@ -132,7 +132,7 @@ public class OrganizationController : ControllerBase
                 OrganizationId = i.OrganizationId,
                 Token = i.Token,
                 ExpirationDate = i.ExpirationDate
-            }).ToList()
+            }).Where(i => i.ExpirationDate > DateTime.UtcNow).ToList()
         };
 
         return Ok(organizationDto);

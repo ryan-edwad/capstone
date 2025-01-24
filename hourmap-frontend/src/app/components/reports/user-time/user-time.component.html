@@ -4,7 +4,7 @@
     <div class="d-flex align-items-center">
       <div class="position-relative me-3" style="width: 200px">
         <label for="userSelect" class="form-label">User</label>
-
+        <!-- Search Box For Users -->
         <input
           type="text"
           class="form-control"
@@ -59,15 +59,15 @@
     </div>
     <div class="mt-4">
       <button
-        class="btn btn me-3"
-        [disabled]="!selectedUserId || !startDate || !endDate"
-        (click)="editTimeEntry(selectedEntry)"
+        class="btn-custom primary me-2"
+        [disabled]="!selectedUserId || !startDate || !endDate || !selectedEntry"
+        (click)="editTimeEntry()"
       >
         Edit Entry
       </button>
 
       <button
-        class="btn btn-primary"
+        class="btn-custom success"
         [disabled]="!selectedUserId || !startDate || !endDate"
         (click)="fetchUserTimeEntries()"
       >
@@ -108,7 +108,6 @@
     </table>
   </div>
 
-  <!-- No Entries Message -->
   <p *ngIf="userTimeEntries.length === 0 && reportGenerated">
     No time entries found for the selected user and date range.
   </p>

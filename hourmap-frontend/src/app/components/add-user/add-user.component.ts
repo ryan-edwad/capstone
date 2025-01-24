@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 export class AddUserComponent {
   addUserForm: FormGroup;
   invitationLink: string | null = null;
+  userInvited = false;
 
   constructor(
     private dialogRef: MatDialogRef<AddUserComponent>,
@@ -33,13 +34,15 @@ export class AddUserComponent {
     var organizationUser = { email, organizationId: this.data.organizationId };
     this.organizationService.inviteUser(organizationUser).subscribe({
       next: (response) => {
-        console.log('Response from API:', response); 
+        console.log('Response from API:', response);
         this.invitationLink = response.registrationLink;
+        this.userInvited = true;
       },
       error: (err) => {
         console.error('Failed to generate invitation link:', err);
         if (err.error?.message) {
           alert(err.error.message); // Display error message to the user
+          this.userInvited = false;
         } else {
           alert('An unexpected error occurred. Please try again.');
         }
@@ -48,7 +51,7 @@ export class AddUserComponent {
   }
 
   close() {
-    this.dialogRef.close();
+    this.dialogRef.close(this.userInvited);
   }
 
   copyLink() {

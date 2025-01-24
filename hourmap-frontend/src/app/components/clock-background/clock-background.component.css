@@ -1,0 +1,55 @@
+body {
+  background-color: #ffffff; /* White background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.clock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.2;
+}
+
+.map-circle {
+  fill: none;
+  stroke: #000000; /* Black outline */
+  stroke-width: 8px; /* Thicker lines */
+}
+
+.hour-hand,
+.minute-hand,
+.second-hand {
+  stroke-linecap: round;
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease-out; /* Smooth transitions */
+}
+
+.hour-hand {
+  stroke: #000000; /* Black */
+  stroke-width: 12px; /* Thicker for vector-like look */
+}
+
+.minute-hand {
+  stroke: #000000; /* Black */
+  stroke-width: 8px; /* Thicker for vector-like look */
+}
+
+.second-hand {
+  fill: #f25c54;
+  stroke: none;
+}
+
+.compass {
+  font-family: "Poppins", sans-serif;
+  font-size: 24px; /* Larger and clearer text */
+  font-weight: 700; /* Bold for vector-like appearance */
+  fill: #000000;
+}

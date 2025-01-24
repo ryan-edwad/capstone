@@ -5,11 +5,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserTimeComponent } from "./user-time/user-time.component";
 import { ProjectTimeComponent } from "./project-time/project-time.component";
+import { TreasurePathBackgroundComponent } from '../treasure-path-background/treasure-path-background.component';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, UserTimeComponent, ProjectTimeComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, UserTimeComponent, ProjectTimeComponent, TreasurePathBackgroundComponent],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })

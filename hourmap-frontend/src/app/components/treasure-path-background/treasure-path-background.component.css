@@ -1,0 +1,25 @@
+.treasure-map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  object-fit: contain;
+}
+
+.treasure-path {
+  fill: none;
+  stroke: #f25c54;
+  stroke-width: 6;
+  stroke-dasharray: 10, 10;
+}
+
+.x-marker {
+  font-family: "Arial", sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  fill: #f25c54;
+}

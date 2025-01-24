@@ -89,7 +89,7 @@ public class InvitationController : ControllerBase
             return BadRequest(new { message = "User already exists." });
         }
 
-        var invitationExists = await _context.Invitations.AnyAsync(i => i.Email == inviteUserDto.Email && i.OrganizationId == inviteUserDto.OrganizationId);
+        var invitationExists = await _context.Invitations.AnyAsync(i => i.Email == inviteUserDto.Email && i.OrganizationId == inviteUserDto.OrganizationId && i.ExpirationDate > DateTime.UtcNow);
         if (invitationExists)
         {
             return BadRequest(new { message = "Invitation already exists.", invitationExists });

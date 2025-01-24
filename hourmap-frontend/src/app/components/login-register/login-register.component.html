@@ -1,5 +1,9 @@
+<app-clock-background></app-clock-background>
 <div class="d-flex vh-100 align-items-center justify-content-center">
-  <div class="card mx-auto" style="max-width: 400px; width: 100%">
+  <div
+    class="card mx-auto login-container"
+    style="max-width: 400px; width: 100%"
+  >
     <div class="card-body">
       <h5 class="card-title text-center">
         @if (isLoginMode) { Login } @else { Register }
@@ -125,7 +129,7 @@
         }
         <button
           type="submit"
-          class="btn btn-primary btn-block"
+          class="btn-custom success"
           [disabled]="authForm.invalid"
         >
           {{ isLoginMode ? "Login" : "Register" }}

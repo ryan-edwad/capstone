@@ -5,11 +5,12 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
 import { RegisterInviteUser } from '../../_models/register-invite-user';
+import { ClockBackgroundComponent } from '../clock-background/clock-background.component';
 
 @Component({
   selector: 'app-login-register',
   standalone: true,
-  imports: [HttpClientModule, ReactiveFormsModule, CommonModule, RouterModule],
+  imports: [HttpClientModule, ReactiveFormsModule, CommonModule, RouterModule, ClockBackgroundComponent],
   providers: [AccountService],
   templateUrl: './login-register.component.html',
   styleUrl: './login-register.component.css'

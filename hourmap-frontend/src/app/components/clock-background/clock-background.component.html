@@ -1,0 +1,32 @@
+<svg class="clock mt-5" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="95" class="map-circle"></circle>
+
+  <!-- Compass Rose -->
+  <text x="100" y="35" text-anchor="middle" class="compass">N</text>
+  <text x="170" y="105" text-anchor="middle" class="compass">E</text>
+  <text x="100" y="180" text-anchor="middle" class="compass">S</text>
+  <text x="30" y="105" text-anchor="middle" class="compass">W</text>
+
+  <!-- Clock Hands -->
+  <line
+    x1="100"
+    y1="100"
+    x2="100"
+    y2="50"
+    id="hour-hand"
+    class="hour-hand"
+  ></line>
+  <line
+    x1="100"
+    y1="100"
+    x2="100"
+    y2="30"
+    id="minute-hand"
+    class="minute-hand"
+  ></line>
+  <polygon
+    id="second-hand"
+    class="second-hand"
+    points="100,20 92,100 100,108 108,100"
+  />
+</svg>

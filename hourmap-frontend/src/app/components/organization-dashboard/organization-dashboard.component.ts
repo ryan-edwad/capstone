@@ -18,11 +18,12 @@ import { AssignProjectComponent } from '../assign-project/assign-project.compone
 import { FormsModule } from '@angular/forms';
 import { EditLocationComponent } from '../edit-location/edit-location.component';
 import { OrganizationDataService } from '../../_services/organization-data.service';
+import { TreasurePathBackgroundComponent } from "../treasure-path-background/treasure-path-background.component";
 
 @Component({
   selector: 'app-organization-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TreasurePathBackgroundComponent],
   templateUrl: './organization-dashboard.component.html',
   styleUrl: './organization-dashboard.component.css'
 })
@@ -97,6 +98,8 @@ export class OrganizationDashboardComponent {
         this.filteredProjects = [...this.organization.projects];
         this.filteredUsers = [...this.organization.users];
         this.filteredInvitations = [...this.organization.invitations];
+        console.log('Invitations:', this.organization.invitations);
+        console.log('Filtered Invitations:', this.filteredInvitations);
         console.log('Loaded organization data:', this.organization);
       },
       error: (err) => console.error('Failed to load organization data:', err)
@@ -126,8 +129,13 @@ export class OrganizationDashboardComponent {
       disableClose: true,
     });
 
-    dialogRef.afterClosed().subscribe(() => {
+    dialogRef.afterClosed().subscribe((result) => {
       console.log('Add user dialog closed!');
+      if (result === true) {
+        console.log('Refreshing organization data');
+        this.organizationDataService.clearCache(this.organization.id);
+        this.refreshOrganization();
+      }
     });
   }
 
@@ -259,6 +267,7 @@ export class OrganizationDashboardComponent {
         };
         this.filteredProjects = [...this.organization.projects];
         this.filteredUsers = [...this.organization.users];
+        this.filteredInvitations = [...this.organization.invitations];
         console.log('Organization data refreshed:', this.organization);
       },
       error: (err) => console.error('Failed to refresh organization data:', err)
