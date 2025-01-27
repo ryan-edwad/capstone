@@ -121,3 +121,36 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
+
+.page-subheader {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.standard-header {
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.standard-subheader {
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.custom-tab {
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #f25c54;
+  opacity: 0.55;
+}
+
+.custom-tab:hover,
+.custom-tab.active {
+  color: #f25c54;
+  opacity: 1;
+}

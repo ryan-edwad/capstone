@@ -18,6 +18,7 @@ export class EditUserComponent {
   assignedProjects: Project[] = [];
   availableProjects: Project[] = [];
   selectedProject: Project | null = null;
+  roles: string[] = [];
 
   constructor(
     private dialogRef: MatDialogRef<EditUserComponent>,

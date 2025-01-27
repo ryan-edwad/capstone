@@ -1,0 +1,37 @@
+.custom-footer {
+  font-size: 1rem;
+  font-weight: bold;
+  background-color: #f25c54;
+}
+
+.custom-footer .nav-link {
+  color: white;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.custom-footer .nav-link:hover {
+  color: white;
+  opacity: 1;
+}
+
+.custom-footer {
+  color: white;
+  opacity: 1;
+}
+
+.navbar-compass-clock {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+}
+
+.navbar-map-circle {
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.navbar-compass {
+  font-size: 20px;
+  fill: #fff;
+}

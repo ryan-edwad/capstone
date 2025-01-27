@@ -77,8 +77,14 @@
   </div>
 
   <!-- Results Table -->
-  <div style="max-height: 500px; overflow-y: auto">
-    <table class="table table-striped mt-4" *ngIf="userTimeEntries.length > 0">
+  <div style="max-height: 400px; overflow-y: auto">
+    <table
+      class="table table-striped table-hover mt-4"
+      *ngIf="userTimeEntries.length > 0"
+    >
+      <caption>
+        List of a selected user's time entries within the selected date range
+      </caption>
       <thead
         style="position: sticky; top: 0; background-color: white; z-index: 1"
       >
@@ -94,7 +100,7 @@
       <tbody>
         <tr
           *ngFor="let entry of userTimeEntries"
-          [class.table-active]="entry === selectedEntry"
+          [class.table-dark]="entry === selectedEntry"
           (click)="selectEntry(entry)"
         >
           <td>{{ entry.clockIn | date : "shortDate" }}</td>

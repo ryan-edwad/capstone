@@ -1,13 +1,15 @@
 <app-clock-background></app-clock-background>
-<div class="d-flex vh-100 align-items-center justify-content-center">
+<div
+  class="d-flex vh-100 align-items-center justify-content-center custom-login-container"
+>
   <div
     class="card mx-auto login-container"
     style="max-width: 400px; width: 100%"
   >
     <div class="card-body">
-      <h5 class="card-title text-center">
+      <h3 class="card-title text-center">
         @if (isLoginMode) { Login } @else { Register }
-      </h5>
+      </h3>
       <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
         @if (!isLoginMode) {
         <div class="form-group mb-3">

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Project } from '../../../_models/project';
 import { WorkLocation } from '../../../_models/work-location';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TimeclockService } from '../../../_services/timeclock.service';
 import { TimeclockEntry } from '../../../_models/timeclock-entry';
 import { CommonModule } from '@angular/common';
@@ -46,8 +46,16 @@ export class EditTimeComponent {
 
   private formatDateTime(dateTime: string): string {
     const date = new Date(dateTime);
-    return date.toISOString().slice(0, 16);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
+
 
   loadProjects() {
     this.timeClockService.getProjectsByUserId(this.userId).subscribe({

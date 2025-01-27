@@ -1,3 +1,67 @@
 .nav-component {
-  z-index: 1;
+  z-index: 1.5;
+  background-color: #f25c54; /* Replace with your desired color */
+  color: white; /* Font color */
+  font-family: "Roboto", sans-serif;
+}
+
+/* Compass Clock Styles for Navbar */
+.navbar-compass-clock {
+  fill: none;
+  stroke: #fff; /* White stroke to match navbar text */
+  stroke-width: 2;
+}
+
+.navbar-map-circle {
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.navbar-compass {
+  font-size: 20px; /* Larger compass letters for visibility */
+  fill: #fff;
+}
+
+.navbar .nav-link {
+  font-size: 1rem; /* Adjust size as needed */
+}
+
+.navbar .nav-link:hover {
+  font-weight: bold;
+  color: white;
+}
+
+.navbar .navbar-brand {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.navbar .nav-link.router-link-active {
+  font-weight: bold; /* Optional: Make active link stand out */
+  text-decoration: underline; /* Optional: Add underline for emphasis */
+}
+
+.navbar-needle {
+  fill: white;
+  transform-origin: 100px 100px; /* Set pivot to compass center */
+  transition: transform 0.2s ease; /* Smooth start/stop */
+}
+
+.navbar-brand:hover .navbar-needle {
+  animation: spin-needle 2s linear infinite; /* Infinite spin */
+}
+
+/* Keyframes for Needle Rotation */
+@keyframes spin-needle {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.navbar .navbar-brand:hover {
+  opacity: 1;
+  text-decoration: underline; /* No underline on hover */
 }

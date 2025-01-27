@@ -78,10 +78,11 @@ export class UserTimeComponent implements OnInit {
       next: (entries: TimeclockEntry[]) => {
         this.userTimeEntries = entries.map(entry => ({
           ...entry,
-          clockIn: this.convertUtcToLocal(entry.clockIn),
-          clockOut: entry.clockOut ? this.convertUtcToLocal(entry.clockOut) : null,
+          clockIn: new Date(entry.clockIn + 'Z').toLocaleString(),
+          clockOut: entry.clockOut ? new Date(entry.clockOut + 'Z').toLocaleString() : null,
           numDuration: this.convertIsoToDecimalHours(entry.duration ?? 'PT0H0M0S')
         }));
+        this.reportGenerated = true;
         console.log('User Time Entries:', this.userTimeEntries);
       }
       ,
@@ -137,15 +138,6 @@ export class UserTimeComponent implements OnInit {
       `Parsed Duration: ${days}d ${hours}h ${minutes}m ${seconds}s => Decimal Hours: ${decimalHours}`
     );
     return decimalHours;
-  }
-
-
-  convertUtcToLocal(utcDate: string): string {
-    const utcDateObj = new Date(utcDate);
-    const localDateObj = new Date(utcDateObj.getTime() - utcDateObj.getTimezoneOffset() * 60000);
-
-    console.log(`UTC: ${utcDate}, Local: ${localDateObj.toLocaleString('en-US', { timeZoneName: 'short' })}`);
-    return localDateObj.toLocaleString('en-US', { hour12: true });
   }
 
   editTimeEntry() {

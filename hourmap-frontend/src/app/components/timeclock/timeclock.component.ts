@@ -183,8 +183,11 @@ export class TimeclockComponent implements OnDestroy {
 
     this.timeClockService.getTimeEntriesByDates(startDate, endDate).subscribe({
       next: (entries) => {
+
         this.timeEntries = entries.map(entry => ({
           ...entry,
+          clockIn: new Date(entry.clockIn + 'Z').toLocaleString(),
+          clockOut: entry.clockOut ? new Date(entry.clockOut + 'Z').toLocaleString() : null,
           numDuration: this.convertIsoToDecimalHours(entry.duration ?? '0')
         }));
         this.filterTimeEntries();
@@ -221,7 +224,7 @@ export class TimeclockComponent implements OnDestroy {
   }
 
   convertIsoToDecimalHours(durationIso: string): number {
-    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(\.\d+)?)S)?/;
+    const regex = /P(?:(\d+)D)?T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(\.\d+)?)S)?/;
     const matches = durationIso.match(regex);
 
     if (!matches) {
@@ -229,13 +232,16 @@ export class TimeclockComponent implements OnDestroy {
       return 0;
     }
 
-    const hours = parseFloat(matches[1] || '0');
-    const minutes = parseFloat(matches[2] || '0');
-    const seconds = parseFloat(matches[3] || '0');
+    const days = parseFloat(matches[1] || '0');
+    const hours = parseFloat(matches[2] || '0');
+    const minutes = parseFloat(matches[3] || '0');
+    const seconds = parseFloat(matches[4] || '0');
 
-    const decimalHours = hours + minutes / 60 + seconds / 3600;
+    const decimalHours = (days * 24) + hours + (minutes / 60) + (seconds / 3600);
 
-    console.log(`Parsed Duration: ${hours}h ${minutes}m ${seconds}s => Decimal Hours: ${decimalHours}`);
+    console.log(
+      `Parsed Duration: ${days}d ${hours}h ${minutes}m ${seconds}s => Decimal Hours: ${decimalHours}`
+    );
     return decimalHours;
   }
 

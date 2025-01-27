@@ -1,11 +1,11 @@
 <app-treasure-path-background></app-treasure-path-background>
 <div class="container page-container mt-5">
-  <h1>Report Management</h1>
-  <a>Pull reports and edit time entries.</a>
+  <h1 class="page-header">Report Management</h1>
+  <p class="page-subheader">Pull reports and edit time entries.</p>
   <ul class="nav nav-tabs mt-3">
     <li class="nav-item">
       <a
-        class="nav-link active"
+        class="nav-link active custom-tab"
         data-bs-toggle="tab"
         data-bs-target="#payroll-report"
         (click)="onTabChange('payroll-report')"
@@ -14,7 +14,7 @@
     </li>
     <li class="nav-item">
       <a
-        class="nav-link"
+        class="nav-link custom-tab"
         data-bs-toggle="tab"
         data-bs-target="#time-entries
         "
@@ -24,7 +24,7 @@
     </li>
     <li class="nav-item">
       <a
-        class="nav-link"
+        class="nav-link custom-tab"
         data-bs-toggle="tab"
         data-bs-target="#projects"
         (click)="onTabChange('projects')"
@@ -72,6 +72,9 @@
         </div>
         <div style="max-height: 500px; overflow-y: auto">
           <table class="table table-striped" *ngIf="payrollReport.length > 0">
+            <caption>
+              List of Users, Hours Worked, and Payrate
+            </caption>
             <thead
               style="
                 position: sticky;

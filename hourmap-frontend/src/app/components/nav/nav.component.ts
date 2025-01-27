@@ -49,7 +49,10 @@ export class NavComponent {
     this.isLoggedIn = true;
     const schema = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
     this.isManagerOrAdmin = token ? ['Manager', 'Admin'].includes(token[schema]) : false;
-    this.userName = token ? token['name'] : '';
+
+    const givenName = token['given_name'] || '';
+    const familyName = token['family_name'] || '';
+    this.userName = `${givenName} ${familyName}`.trim() || token['name'];
     this.navLink = this.isManagerOrAdmin
       ? '/organization-dashboard'
       : '/timeclock';

@@ -1,28 +1,39 @@
 <app-treasure-path-background></app-treasure-path-background>
 <div class="container page-container mt-5">
-  <h1>{{ organization.name }}</h1>
-  <p>Manage your organization here!</p>
-  <ul class="nav nav-tabs">
+  <h1 class="standard-header">{{ organization.name }}</h1>
+  <p class="page-subheader">Manage your organization here!</p>
+  <ul class="nav nav-tabs mt-4">
     <li class="nav-item">
       <a
-        class="nav-link active"
+        class="nav-link active custom-tab"
         data-bs-toggle="tab"
         data-bs-target="#users-tab"
         >Users</a
       >
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#invitations-tab"
+      <a
+        class="nav-link custom-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#invitations-tab"
         >Invitations</a
       >
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#projects-tab">
+      <a
+        class="nav-link custom-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#projects-tab"
+      >
         Projects
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" data-bs-toggle="tab" data-bs-target="#locations-tab">
+      <a
+        class="nav-link custom-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#locations-tab"
+      >
         Locations
       </a>
     </li>
@@ -76,9 +87,12 @@
         </label>
       </div>
       <table
-        class="table table-striped"
+        class="table table-striped table-hover"
         *ngIf="filteredUsers && filteredUsers.length > 0"
       >
+        <caption>
+          List of users
+        </caption>
         <thead>
           <tr>
             <th>Name</th>
@@ -91,7 +105,7 @@
         <tbody>
           <tr
             *ngFor="let user of filteredUsers"
-            [class.table-primary]="selectedUser === user"
+            [class.table-dark]="selectedUser === user"
             (click)="selectUser(user)"
           >
             <td>{{ user?.firstName }} {{ user?.lastName }}</td>
@@ -155,9 +169,12 @@
           style="max-height: 500px; overflow-y: auto"
         >
           <table
-            class="table table-striped"
+            class="table table-striped table-hover"
             *ngIf="filteredInvitations && filteredInvitations.length > 0"
           >
+            <caption>
+              List of Invitations
+            </caption>
             <thead
               style="
                 position: sticky;
@@ -175,7 +192,7 @@
             <tbody>
               <tr
                 *ngFor="let invitation of filteredInvitations"
-                [class.table-primary]="selectedInvitation === invitation"
+                [class.table-dark]="selectedInvitation === invitation"
                 (click)="selectInvitation(invitation)"
               >
                 <td>{{ invitation.email }}</td>
@@ -255,9 +272,12 @@
         </label>
       </div>
       <table
-        class="table table-striped"
+        class="table table-striped table-hover"
         *ngIf="filteredProjects && filteredProjects.length > 0"
       >
+        <caption>
+          List of projects
+        </caption>
         <thead>
           <tr>
             <th>Name</th>
@@ -268,7 +288,7 @@
         <tbody>
           <tr
             *ngFor="let project of filteredProjects"
-            [class.table-primary]="selectedProject === project"
+            [class.table-dark]="selectedProject === project"
             (click)="selectProject(project)"
           >
             <td>{{ project.name }}</td>
@@ -309,9 +329,12 @@
         </button>
       </div>
       <table
-        class="table table-striped"
+        class="table table-striped table-hover"
         *ngIf="organization?.locations && organization.locations.length > 0"
       >
+        <caption>
+          List of locations
+        </caption>
         <thead>
           <tr>
             <th>Name</th>
@@ -324,7 +347,7 @@
         <tbody>
           <tr
             *ngFor="let location of organization?.locations"
-            [class.table-primary]="selectedLocation === location"
+            [class.table-dark]="selectedLocation === location"
             (click)="selectLocation(location)"
           >
             <td>{{ location.name }}</td>

@@ -4,13 +4,15 @@
     <!-- Left Side: Clock and Clock-In Form -->
     <div class="col-md-6 border-end">
       <div class="clock-section text-left">
-        <h1 class="live-clock">{{ currentTime | date : "mediumTime" }}</h1>
+        <h1 class="standard-header">Timeclock</h1>
+        <h1 class="live-clock">
+          {{ currentTime | date : "mediumTime" }}
+        </h1>
         <p class="live-date">{{ currentTime | date : "fullDate" }}</p>
       </div>
 
       <!-- Clock-In Form -->
       <div class="clock-action-section mt-4">
-        <h3 class="form-header">Clock In/Out</h3>
         <form [formGroup]="clockForm" (ngSubmit)="onSubmit()">
           <div class="form-group mb-3">
             <label for="location">Location</label>
@@ -55,7 +57,6 @@
     <!-- Right Side: Time Entries Table -->
     <div class="col-md-6">
       <div class="time-entries-section">
-        <h3 class="table-header">My Time Entries</h3>
         <div class="d-flex align-items-center justify-content-between">
           <select
             class="form-select me-2"
@@ -70,7 +71,7 @@
             >Total Duration: {{ totalDuration | number : "1.1-2" }} hours</span
           >
         </div>
-        <div style="max-height: 300px; overflow-y: auto">
+        <div style="max-height: 350px; overflow-y: auto">
           <table
             class="table table-striped"
             style="width: 100%; border-collapse: collapse"
@@ -114,6 +115,9 @@
               </tr>
             </tbody>
           </table>
+          <div *ngIf="filteredTimeEntries.length === 0" class="text-center">
+            No time entries yet! Clock in to get started.
+          </div>
         </div>
       </div>
     </div>
