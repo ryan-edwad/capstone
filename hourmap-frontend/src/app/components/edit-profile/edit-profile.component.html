@@ -1,0 +1,80 @@
+<app-treasure-path-background></app-treasure-path-background>
+<div class="container mt-5">
+  <h1>Edit User Profile</h1>
+  <form [formGroup]="editUserForm" (ngSubmit)="onSubmit()">
+    <div class="form-group mb-3">
+      <label for="firstName">First Name</label>
+      <input
+        id="firstName"
+        type="text"
+        class="form-control"
+        formControlName="firstName"
+        placeholder="Enter first name"
+      />
+      <div
+        class="text-danger"
+        *ngIf="
+          editUserForm.get('firstName')?.invalid &&
+          editUserForm.get('firstName')?.touched
+        "
+      >
+        First Name is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="lastName">Last Name</label>
+      <input
+        id="lastName"
+        type="text"
+        class="form-control"
+        formControlName="lastName"
+        placeholder="Enter last name"
+      />
+      <div
+        class="text-danger"
+        *ngIf="
+          editUserForm.get('lastName')?.invalid &&
+          editUserForm.get('lastName')?.touched
+        "
+      >
+        Last Name is required.
+      </div>
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        class="form-control"
+        formControlName="email"
+        placeholder="Enter email address"
+      />
+      <div
+        class="text-danger"
+        *ngIf="
+          editUserForm.get('email')?.invalid &&
+          editUserForm.get('email')?.touched
+        "
+      >
+        A valid email is required.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn-custom success me-2"
+      [disabled]="editUserForm.invalid || isFormUnchanged()"
+    >
+      Save Changes
+    </button>
+    <button
+      type="button"
+      class="btn-custom danger"
+      (click)="router.navigate(['/timeclock'])"
+    >
+      Cancel
+    </button>
+  </form>
+</div>

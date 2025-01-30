@@ -7,6 +7,7 @@ import { Project } from '../_models/project';
 import { CreateProject } from '../_models/create-project';
 import { WorkLocation } from '../_models/work-location';
 import { OrgUser } from '../_models/org-user';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -33,14 +34,19 @@ export class OrganizationService {
     return this.http.delete<{ message: string }>(deleteUrl);
   }
 
-  getUser(userId: string) {
+  getUser(userId: string): Observable<OrgUser> {
     var userUrl = `${environment.apiUrl}user/${userId}`;
-    return this.http.get(userUrl);
+    return this.http.get<OrgUser>(userUrl);
   }
 
   updateUser(userId: string, editUser: { firstName: string, lastName: string, email: string, jobTitle: string, payRate: number }) {
     var userUrl = `${environment.apiUrl}user/edit-by-manager/${userId}`;
     return this.http.put<{ message: string }>(userUrl, editUser);
+  }
+
+  updateUserProfile(userId: string, editUser: { firstName: string, lastName: string, email: string }) {
+    var userUrl = `${environment.apiUrl}user/edit-my-profile/${userId}`;
+    return this.http.put<{ message: string; token: string }>(userUrl, editUser);
   }
 
   createOrganization(organization: { name: string }) {
@@ -113,6 +119,16 @@ export class OrganizationService {
   updateProjectUsers(projectId: number, userIds: string[]) {
     var updateUrl = `${environment.apiUrl}project/${projectId}/update-users`;
     return this.http.post<{ message: string }>(updateUrl, userIds);
+  }
+
+  promoteUser(userId: string) {
+    var promoteUrl = `${environment.apiUrl}user/add-manager-role/${userId}`;
+    return this.http.post<{ message: string }>(promoteUrl, {});
+  }
+
+  demoteUser(userId: string) {
+    var demoteUrl = `${environment.apiUrl}user/remove-manager-role/${userId}`;
+    return this.http.post<{ message: string }>(demoteUrl, {});
   }
 
 }

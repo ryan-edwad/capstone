@@ -15,7 +15,18 @@ export class AccountService {
   baseUrl = `${environment.apiUrl}auth/`;
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
+  private currentUserIdSubject = new BehaviorSubject<string | null>(null);
+  public currentUserId$ = this.currentUserIdSubject.asObservable();
 
+  constructor() {
+    this.loadUserIdFromToken();
+  }
+
+  private loadUserIdFromToken() {
+    const tokenData = this.getTokenDecoded();
+    const userId = tokenData?.sub || null;
+    this.currentUserIdSubject.next(userId);
+  }
 
 
   login(user: { email: string, password: string }) {
@@ -29,6 +40,7 @@ export class AccountService {
           roles: response.roles
         });
         this.isAuthenticatedSubject.next(true);
+        this.loadUserIdFromToken();
         console.log('isAuthenticatedSubject emitted:', true);
         if (!response.organizationId) {
           console.log('Navigating to create organization... ');
@@ -45,9 +57,18 @@ export class AccountService {
       },
       error: (err) => {
         console.error('Login error:', err);
-        alert('Failed to log in. Please check your credentials and try again.');
+        alert('Login failed. ' + err.error.message);
       },
     });
+  }
+
+  refreshToken(token: string) {
+    if (!token) {
+      console.error('No token found for refresh.');
+      return;
+    }
+    console.log('Token to be refreshed:', token);
+    this.saveToken(token);
   }
 
   register(registerUser: { email: string, password: string, lastName?: string, firstName?: string }) {
@@ -81,11 +102,14 @@ export class AccountService {
 
   logout() {
     this.removeToken();
+    this.currentUserIdSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
 
   private saveToken(token: string) {
+    console.log('Saving token:', token);
     localStorage.setItem('authToken', token);
+    this.loadUserIdFromToken();
   }
 
   private removeToken() {

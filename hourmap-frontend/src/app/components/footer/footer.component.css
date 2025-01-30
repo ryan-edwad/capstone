@@ -2,6 +2,7 @@
   font-size: 1rem;
   font-weight: bold;
   background-color: #f25c54;
+  z-index: 1;
 }
 
 .custom-footer .nav-link {

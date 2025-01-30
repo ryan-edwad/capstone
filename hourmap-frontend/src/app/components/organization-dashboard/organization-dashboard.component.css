@@ -7,3 +7,16 @@
   color: red;
   font-weight: bold; /* Optional: Make it bold */
 }
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  text-decoration: underline;
+}
+
+.bi {
+  margin-left: 5px;
+}

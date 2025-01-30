@@ -19,11 +19,13 @@ import { FormsModule } from '@angular/forms';
 import { EditLocationComponent } from '../edit-location/edit-location.component';
 import { OrganizationDataService } from '../../_services/organization-data.service';
 import { TreasurePathBackgroundComponent } from "../treasure-path-background/treasure-path-background.component";
+import { AccountService } from '../../_services/account.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-organization-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, TreasurePathBackgroundComponent],
+  imports: [CommonModule, FormsModule, TreasurePathBackgroundComponent, MatTooltipModule],
   templateUrl: './organization-dashboard.component.html',
   styleUrl: './organization-dashboard.component.css'
 })
@@ -42,8 +44,11 @@ export class OrganizationDashboardComponent {
   searchUsersQuery: string = '';
   searchInvitationsQuery: string = '';
   searchProjectsQuery: string = '';
+  currentUserId: string | null = null;
+  sortColumn: string = ''
+  sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog, private organizationDataService: OrganizationDataService) { }
+  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog, private organizationDataService: OrganizationDataService, private accountService: AccountService) { }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -69,6 +74,7 @@ export class OrganizationDashboardComponent {
       this.router.navigate(['/login']);
       return;
     }
+    this.accountService.currentUserId$.subscribe(userId => { this.currentUserId = userId });
 
     let organizationId: number | null = null;
     try {
@@ -112,7 +118,7 @@ export class OrganizationDashboardComponent {
       invite.email.toLowerCase().includes(query));
   }
 
-  // Select a user, duh
+  // Select a user
   selectUser(orgUser: OrgUser) {
     this.selectedUser = orgUser;
   }
@@ -121,7 +127,7 @@ export class OrganizationDashboardComponent {
     this.selectedInvitation = invitation;
   }
 
-  // Add a user, duh
+  // Add a user
   addUser() {
     const dialogRef = this.dialog.open(AddUserComponent, {
       width: '400px',
@@ -166,15 +172,56 @@ export class OrganizationDashboardComponent {
     });
   }
 
-  // Disable sign-in for a user
-  disableUser() {
+  // Disable/enable sign-in for a user
+  changeUserSignInStatus() {
     if (this.selectedUser) {
-      this.organizationService.disableUser(this.selectedUser.id).subscribe({
-        next: (data) => {
-          console.log(data);
-        },
-        error: (err) => console.error('Failed to disable user: ', err)
-      });
+      if (this.selectedUser.loginEnabled) {
+        this.organizationService.disableUser(this.selectedUser.id).subscribe({
+          next: (data) => {
+            console.log(data);
+            this.refreshOrganization();
+          },
+          error: (err) => console.error('Failed to disable user: ', err)
+        });
+      }
+      else {
+        this.organizationService.enableUser(this.selectedUser.id).subscribe({
+          next: (data) => {
+            console.log(data);
+            this.refreshOrganization();
+          },
+          error: (err) => console.error('Failed to enable user: ', err)
+        });
+      }
+    }
+  }
+
+  // Promote or demote user
+  changeUserAdminStatus() {
+    if (this.selectedUser && this.currentUserId !== this.selectedUser.id) {
+      if (this.selectedUser.roles.includes('Manager')) {
+        if (window.confirm('Are you sure you want to demote this user?')) {
+          this.organizationService.demoteUser(this.selectedUser.id).subscribe({
+            next: (data) => {
+              console.log(data);
+              this.refreshOrganization();
+            },
+            error: (err) => console.error('Failed to demote user: ', err)
+          });
+        }
+      }
+      else {
+        if (window.confirm('Are you sure you want to promote this user?')) {
+          this.organizationService.promoteUser(this.selectedUser.id).subscribe({
+            next: (data) => {
+              console.log(data);
+              this.refreshOrganization();
+            },
+            error: (err) => console.error('Failed to promote user: ', err)
+          });
+        }
+
+      }
     }
   }
 
@@ -241,19 +288,6 @@ export class OrganizationDashboardComponent {
       this.router.navigate(['/login']);
       return;
     }
-
-    // this.organizationService.getOrganization(organizationId).subscribe({
-    //   next: (data) => {
-    //     this.organization = {
-    //       ...data,
-    //       users: data.users || [],
-    //       projects: data.projects || [],
-    //       locations: data.locations || []
-    //     };
-    //     console.log('Organization data refreshed:', this.organization);
-    //   },
-    //   error: (err) => console.error('Failed to refresh organization data:', err)
-    // });
 
     // Moving toward a cached service instead
     this.organizationDataService.clearCache(organizationId);
@@ -437,5 +471,36 @@ export class OrganizationDashboardComponent {
         },
       });
     }
+  }
+
+  sortTable(column: string) {
+    if (this.sortColumn = column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    this.filteredUsers.sort((a, b) => {
+      let valueA: string, valueB: string;
+
+      if (column === 'name') {
+        valueA = `${a.firstName} ${a.lastName}`.toLowerCase().trim();
+        valueB = `${b.firstName} ${b.lastName}`.toLowerCase().trim();
+      }
+      else {
+        valueA = String(a[column as keyof OrgUser] ?? '').toLowerCase().trim();
+        valueB = String(b[column as keyof OrgUser] ?? '').toLowerCase().trim();
+      }
+
+      if (valueA < valueB) {
+        return this.sortDirection === 'asc' ? -1 : 1;
+      }
+      if (valueA > valueB) {
+        return this.sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
   }
 }

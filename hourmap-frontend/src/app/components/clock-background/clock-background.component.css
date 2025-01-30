@@ -1,5 +1,5 @@
 body {
-  background-color: #ffffff; /* White background */
+  background-color: #ffffff; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,8 +20,8 @@ body {
 
 .map-circle {
   fill: none;
-  stroke: #000000; /* Black outline */
-  stroke-width: 8px; /* Thicker lines */
+  stroke: #000000;
+  stroke-width: 8px; 
 }
 
 .hour-hand,
@@ -29,17 +29,17 @@ body {
 .second-hand {
   stroke-linecap: round;
   transform-origin: 50% 50%;
-  transition: transform 0.2s ease-out; /* Smooth transitions */
+  transition: transform 0.2s ease-out; 
 }
 
 .hour-hand {
-  stroke: #000000; /* Black */
-  stroke-width: 12px; /* Thicker for vector-like look */
+  stroke: #000000; 
+  stroke-width: 12px; 
 }
 
 .minute-hand {
-  stroke: #000000; /* Black */
-  stroke-width: 8px; /* Thicker for vector-like look */
+  stroke: #000000; 
+  stroke-width: 8px; 
 }
 
 .second-hand {
@@ -49,7 +49,7 @@ body {
 
 .compass {
   font-family: "Poppins", sans-serif;
-  font-size: 24px; /* Larger and clearer text */
-  font-weight: 700; /* Bold for vector-like appearance */
+  font-size: 24px; 
+  font-weight: 700; 
   fill: #000000;
 }

@@ -1,0 +1,30 @@
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  color: #6c757d;
+}
+
+.container.bg-dark-hero {
+  z-index: 1;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.bg-dark-hero {
+  background-color: #423e3b;
+  color: white;
+  padding: 5rem;
+}
+
+.bg-dark-hero h1 {
+  color: white;
+}
+
+.bg-dark-hero p {
+  color: #9cafb7;
+  font-weight: bold;
+}

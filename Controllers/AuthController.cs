@@ -1,4 +1,5 @@
-﻿using HourMap.Data;
+﻿using System.Security.Claims;
+using HourMap.Data;
 using HourMap.Dtos;
 using HourMap.Entities;
 using HourMap.Interfaces;
@@ -101,8 +102,13 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = "Invalid username or password" });
         }
-        var roles = await _userManager.GetRolesAsync(user);
 
+        if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
+        {
+            return Unauthorized(new { message = "User is locked out. Please contact your administrator." });
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
         var authResponse = new
@@ -116,6 +122,33 @@ public class AuthController : ControllerBase
 
         return Ok(authResponse);
 
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var token = Request.Headers["Authorization"];
+        Console.WriteLine("Authorization Header: " + token);
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            Console.WriteLine("No User ID in token.");
+            return Unauthorized("Invalid token: User ID not found.");
+        }
+
+        var user = await _userManager.FindByIdAsync(userId);
+        Console.WriteLine("User: " + user);
+        if (user == null)
+        {
+            Console.WriteLine($"User not found: {userId}");
+            return Unauthorized("Invalid token: User does not exist.");
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var newToken = _jwtTokenGenerator.GenerateToken(user, roles);
+
+        return Ok(new { token = newToken });
     }
 
 }

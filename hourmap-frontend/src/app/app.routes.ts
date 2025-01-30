@@ -5,9 +5,10 @@ import { OrganizationDashboardComponent } from './components/organization-dashbo
 import { authGuard } from './_guards/auth.guard';
 import { TimeclockComponent } from './components/timeclock/timeclock.component';
 import { ReportsComponent } from './components/reports/reports.component';
+import { EditProfileComponent } from './components/edit-profile/edit-profile.component';
+import { HomePageComponent } from './components/home-page/home-page.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'login', component: LoginRegisterComponent },
     { path: 'register', component: LoginRegisterComponent }, // For registration, we're gonna pull which is in the URL for the form
     {
@@ -33,6 +34,16 @@ export const routes: Routes = [
         component: ReportsComponent,
         canActivate: [authGuard],
         data: { roles: ['Manager', 'Admin'] }
+    },
+    {
+        path: 'user-profile',
+        component: EditProfileComponent,
+        canActivate: [authGuard],
+        data: { roles: ['Manager', 'Admin', 'Employee'] }
+    },
+    {
+        path: '**',
+        component: HomePageComponent
     }
 
 ];

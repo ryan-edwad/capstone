@@ -107,7 +107,7 @@ public class OrganizationController : ControllerBase
                                      .Where(role => role != null)
                                      .Select(role => role!)
                                      .ToList() : new List<string>(),
-                LoginEnabled = u.LockoutEnabled || (u.LockoutEnd.HasValue && u.LockoutEnd <= DateTimeOffset.Now)
+                LoginEnabled = !u.LockoutEnd.HasValue || u.LockoutEnd.Value < DateTime.UtcNow,
             }).ToList(),
             Projects = organization.Projects.Select(p => new ProjectDto
             {

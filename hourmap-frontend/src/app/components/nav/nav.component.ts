@@ -54,8 +54,8 @@ export class NavComponent {
     const familyName = token['family_name'] || '';
     this.userName = `${givenName} ${familyName}`.trim() || token['name'];
     this.navLink = this.isManagerOrAdmin
-      ? '/organization-dashboard'
-      : '/timeclock';
+      ? '/'
+      : '/';
   }
 
   logLinkClick(link: string) {

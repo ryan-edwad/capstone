@@ -1,14 +1,14 @@
 .nav-component {
   z-index: 1.5;
-  background-color: #f25c54; /* Replace with your desired color */
-  color: white; /* Font color */
+  background-color: #f25c54;
+  color: white;
   font-family: "Roboto", sans-serif;
 }
 
 /* Compass Clock Styles for Navbar */
 .navbar-compass-clock {
   fill: none;
-  stroke: #fff; /* White stroke to match navbar text */
+  stroke: #fff;
   stroke-width: 2;
 }
 
@@ -18,12 +18,12 @@
 }
 
 .navbar-compass {
-  font-size: 20px; /* Larger compass letters for visibility */
+  font-size: 20px;
   fill: #fff;
 }
 
 .navbar .nav-link {
-  font-size: 1rem; /* Adjust size as needed */
+  font-size: 1rem;
 }
 
 .navbar .nav-link:hover {
@@ -37,18 +37,18 @@
 }
 
 .navbar .nav-link.router-link-active {
-  font-weight: bold; /* Optional: Make active link stand out */
-  text-decoration: underline; /* Optional: Add underline for emphasis */
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 .navbar-needle {
   fill: white;
-  transform-origin: 100px 100px; /* Set pivot to compass center */
-  transition: transform 0.2s ease; /* Smooth start/stop */
+  transform-origin: 100px 100px;
+  transition: transform 0.2s ease;
 }
 
 .navbar-brand:hover .navbar-needle {
-  animation: spin-needle 2s linear infinite; /* Infinite spin */
+  animation: spin-needle 2s linear infinite;
 }
 
 /* Keyframes for Needle Rotation */
@@ -63,5 +63,5 @@
 
 .navbar .navbar-brand:hover {
   opacity: 1;
-  text-decoration: underline; /* No underline on hover */
+  text-decoration: underline;
 }

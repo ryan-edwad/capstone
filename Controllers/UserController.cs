@@ -2,6 +2,7 @@
 using HourMap.Data;
 using HourMap.Dtos;
 using HourMap.Entities;
+using HourMap.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -17,12 +18,14 @@ public class UserController : ControllerBase
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IJwtTokenGenerator _jwtTokenService;
 
-    public UserController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+    public UserController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IJwtTokenGenerator jwtTokenService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _context = context;
+        _jwtTokenService = jwtTokenService;
     }
     // TODO: Get all users in an organization, only for managers and admins
     [HttpGet]
@@ -108,9 +111,9 @@ public class UserController : ControllerBase
         return Ok(new { message = "User profile updated successfully." });
     }
 
-    // TODO: Edit a user profile as the user, some fields not enabled (cannot change pay rate or job title)
+    // Edit a user profile as the user, some fields not enabled (cannot change pay rate or job title)
     [HttpPut("edit-my-profile/{id}")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Employee")]
     public async Task<IActionResult> EditMyProfile(string id, EditUserProfileDto userDto)
     {
         var user = await _context.Users.FindAsync(id);
@@ -126,10 +129,13 @@ public class UserController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok("User profile updated successfully.");
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
+
+        return Ok(new { message = "User profile updated successfully.", token });
     }
 
-    // TODO: Assign a project to a user, only for managers and admins
+    // Assign a project to a user, only for managers and admins
     [HttpPost("assign-project/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> AssignProjectToUser(string userId, ProjectDto projectDto)
@@ -160,7 +166,7 @@ public class UserController : ControllerBase
         return Ok("Project assigned to user successfully.");
     }
 
-    // TODO: Remove a project from a user, only for managers and admins
+    // Remove a project from a user, only for managers and admins
     [HttpDelete("remove-project/{userId}/{projectId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> RemoveProjectFromUser(string userId, int projectId)
@@ -218,10 +224,10 @@ public class UserController : ControllerBase
         return Ok(projectDtos);
     }
 
-    // TODO: Add manager role to a user, only for admins/managers with ManageOrganization == true
+    // promote user
     [HttpPost("add-manager-role/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
-    public async Task<IActionResult> AddManagerRoleToUser(string userId)
+    public async Task<IActionResult> AddManagerRole(string userId)
     {
         var organizationClaim = User.FindFirst("OrganizationId")?.Value;
         if (string.IsNullOrEmpty(organizationClaim))
@@ -242,13 +248,13 @@ public class UserController : ControllerBase
             var removeResult = await _userManager.RemoveFromRoleAsync(user, "Employee");
             if (!removeResult.Succeeded)
             {
-                return BadRequest("Failed to remove employee role from user.");
+                return BadRequest(new { message = "Failed to remove employee role from user." });
             }
             else
             {
                 var addResult = await _userManager.AddToRoleAsync(user, "Manager");
                 if (!addResult.Succeeded)
-                    return BadRequest("Failed to add manager role to user.");
+                    return BadRequest(new { message = "Failed to add manager role to user." });
             }
 
         }
@@ -257,13 +263,13 @@ public class UserController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok("Manager role added to user successfully.");
+        return Ok(new { message = "Manager role added to user successfully." });
     }
 
     // TODO: Remove manager role from a user, only for admins/managers with ManageOrganization == true
-    [HttpDelete("remove-manager-role/{userId}")]
+    [HttpPost("remove-manager-role/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
-    public async Task<IActionResult> RemoveManagerRoleFromUser(string userId)
+    public async Task<IActionResult> RemoveManagerRole(string userId)
     {
         var organizationClaim = User.FindFirst("OrganizationId")?.Value;
         if (string.IsNullOrEmpty(organizationClaim))
@@ -275,28 +281,28 @@ public class UserController : ControllerBase
         if (user == null)
             return NotFound("User not found in the organization.");
 
-        if (!await _userManager.IsInRoleAsync(user, "Manager"))
+        if (await _userManager.IsInRoleAsync(user, "Manager"))
         {
             var removeResult = await _userManager.RemoveFromRoleAsync(user, "Manager");
             if (!removeResult.Succeeded)
             {
-                return BadRequest("Failed to remove manager role from user.");
+                return BadRequest(new { message = "Failed to remove manager role from user." });
             }
             else
             {
                 var addResult = await _userManager.AddToRoleAsync(user, "Employee");
                 if (!addResult.Succeeded)
-                    return BadRequest("Failed to add employee role to user.");
+                    return BadRequest(new { message = "Failed to add employee role to user." });
             }
         }
         await UpdateRoleClaimsAsync(user, "Employee");
         user.ManagesOrganization = false;
 
         await _context.SaveChangesAsync();
-        return Ok("Manager role removed from user successfully.");
+        return Ok(new { message = "Manager role removed from user successfully." });
     }
 
-    // TODO: Disable sign in for a user, only for admins/managers with ManageOrganization == true
+    // Disable sign in for a user, only for admins/managers with ManageOrganization == true
     [HttpPut("disable-sign-in/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> DisableSignInForUser(string userId)
@@ -309,14 +315,18 @@ public class UserController : ControllerBase
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId && u.OrganizationId == organizationId);
         if (user == null)
-            return NotFound("User not found in the organization.");
+            return NotFound(new { message = "User not found in the organization." });
 
-        if (!user.LockoutEnabled) user.LockoutEnabled = true;
+        if (user.LockoutEnd == null || user.LockoutEnd < DateTimeOffset.UtcNow)
+        {
+            user.LockoutEnabled = true;
+            user.LockoutEnd = DateTimeOffset.UtcNow.AddYears(100);
+        }
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
-            return BadRequest("Failed to disable sign in for user.");
+            return BadRequest(new { message = "Failed to disable sign in for user." });
 
-        return Ok("User sign in disabled successfully.");
+        return Ok(new { message = "User sign in disabled successfully." });
     }
 
     // Enable sign in for a user, only for admins/managers with ManageOrganization == true
@@ -334,12 +344,14 @@ public class UserController : ControllerBase
         if (user == null)
             return NotFound("User not found in the organization.");
 
-        if (user.LockoutEnabled) user.LockoutEnabled = false;
+        user.LockoutEnabled = false;
+        user.LockoutEnd = null;
         var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-            return BadRequest("Failed to disable sign in for user.");
 
-        return Ok("User sign in enabled successfully.");
+        if (!result.Succeeded)
+            return BadRequest(new { message = "Failed to disable sign in for user." });
+
+        return Ok(new { message = "User sign in enabled successfully." });
     }
 
     // Claims

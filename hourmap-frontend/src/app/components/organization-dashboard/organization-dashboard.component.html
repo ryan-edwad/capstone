@@ -1,4 +1,5 @@
 <app-treasure-path-background></app-treasure-path-background>
+
 <div class="container page-container mt-5">
   <h1 class="standard-header">{{ organization.name }}</h1>
   <p class="page-subheader">Manage your organization here!</p>
@@ -55,11 +56,34 @@
             Edit User
           </button>
           <button
-            class="btn-custom danger btn-block ms-2"
-            [disabled]="!selectedUser"
-            (click)="disableUser()"
+            [ngClass]="
+              selectedUser?.loginEnabled === false
+                ? 'btn-custom tertiary btn-block ms-2'
+                : 'btn-custom danger btn-block ms-2'
+            "
+            [disabled]="!selectedUser || selectedUser.id === currentUserId"
+            (click)="changeUserSignInStatus()"
           >
-            Disable User
+            {{
+              selectedUser?.loginEnabled === false
+                ? " Enable User"
+                : "Disable User"
+            }}
+          </button>
+          <button
+            [ngClass]="
+              selectedUser?.roles?.includes('Manager')
+                ? 'btn-custom danger btn-block ms-2'
+                : 'btn-custom secondary btn-block ms-2'
+            "
+            [disabled]="!selectedUser || selectedUser.id === currentUserId"
+            (click)="changeUserAdminStatus()"
+          >
+            {{
+              selectedUser?.roles?.includes("Manager")
+                ? " Demote User"
+                : "Promote User"
+            }}
           </button>
         </div>
         <!-- Right: Search Box -->
@@ -95,7 +119,17 @@
         </caption>
         <thead>
           <tr>
-            <th>Name</th>
+            <th (click)="sortTable('name')" class="sortable">
+              Name
+              <span *ngIf="sortColumn === 'name'">
+                <i
+                  [ngClass]="[
+                    'bi',
+                    sortDirection === 'asc' ? 'bi-arrow-up' : 'bi-arrow-down'
+                  ]"
+                ></i>
+              </span>
+            </th>
             <th>Email</th>
             <th>Job Title</th>
             <th>Permissions</th>
@@ -228,7 +262,7 @@
           <button
             [ngClass]="
               selectedProject?.enabled === false
-                ? 'btn-custom success btn-block ms-2'
+                ? 'btn-custom tertiary btn-block ms-2'
                 : 'btn-custom danger btn-block ms-2'
             "
             [disabled]="!selectedProject"
