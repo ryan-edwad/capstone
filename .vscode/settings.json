@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/a0fdf979-7422-4ff6-9acc-5f3b5f84c584/resourceGroups/hourmap_group/providers/Microsoft.Web/sites/hourmap",
+  "appService.deploySubpath": "HourMap/bin/Publish"
+}
