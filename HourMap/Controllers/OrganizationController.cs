@@ -49,6 +49,13 @@ public class OrganizationController : ControllerBase
 
         user.OrganizationId = newOrganization.Id;
         user.ManagesOrganization = true;
+
+        var defaultLocations = new List<Location>{
+            new Location {Name = "Remote", OrganizationId = newOrganization.Id, Description = "Remote work location"},
+            new Location {Name = "Office", OrganizationId = newOrganization.Id, Description = "On-site work location"}
+
+        };
+        await _context.Locations.AddRangeAsync(defaultLocations);
         await _context.SaveChangesAsync();
 
         var organizationDto = new OrganizationDto

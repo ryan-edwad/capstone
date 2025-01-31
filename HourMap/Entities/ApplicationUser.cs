@@ -8,6 +8,8 @@ public class ApplicationUser : IdentityUser
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? JobTitle { get; set; }
+
+    [Column(TypeName = "decimal(18,2)")]
     public decimal? PayRate { get; set; }
     public bool ManagesOrganization { get; set; } = false;
 
