@@ -3,6 +3,9 @@
 set -e 
 
 LOG_FILE="deploy.log"
+REPO_DIR="$(pwd)"
+echo " Current directory: $REPO_DIR"
+
 exec > >(tee -a "$LOG_FILE") 2>&1 
 
 echo "Starting Deployment at $(date)"
@@ -42,7 +45,7 @@ dotnet clean
 dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
 
 # Zip up the publish folder for deployment
-cd HourMap/bin/Publish
+cd /bin/Publish
 zip -r ../publish.zip .  # Create a ZIP of the deployment folder
 cd ../../..
 
