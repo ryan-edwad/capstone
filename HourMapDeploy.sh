@@ -48,7 +48,7 @@ dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
 dotnet publish --configuration Release --output bin/Publish || (echo "❌ .NET Publish Failed!" && exit 1)
 
 # Zip up the publish folder for deployment
-cd /bin/Publish
+cd bin/Publish
 zip -r ../publish.zip .  # Create a ZIP of the deployment folder
 cd ../../..
 
