@@ -7,11 +7,13 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "Starting Deployment at $(date)"
 
+
 echo "🔑 Logging into Azure..."
 az login --service-principal -u "$AZURE_APP_ID" -p "$AZURE_SECRET" --tenant "$AZURE_TENANT_ID"
 
+
 echo "📥 Pulling latest code from GitLab..."
-git clone https://oauth2:$GITLAB_TOKEN@gitlab.com/your-org/your-repo.git || (echo "❌ Git pull failed!" && exit 1)
+git clone https://oauth2:$GITLAB_TOKEN@gitlab.com/wgu-gitlab-environment/student-repos/rsnyd81/d424-software-engineering-capstone.git || (echo "❌ Git pull failed!" && exit 1)
 
 # Build Angular frontend
 echo "Installing Angular dependencies..."
@@ -31,10 +33,18 @@ echo "Building .NET Core backend..."
 cd HourMap
 dotnet clean
 dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
+
+# Zip up the publish folder for deployment
+cd HourMap/bin/Publish
+zip -r ../publish.zip .  # Create a ZIP of the deployment folder
+cd ../../..
+
+
+
 dotnet publish --configuration Release --output bin/Publish || (echo "❌ .NET Publish Failed!" && exit 1)
 
-# Deploy to Azure App Service
+#Deploy to Azure App Service
 echo "🚀 Deploying to Azure..."
-az webapp up --name "HourMapApp" --resource-group "hourmap_group" --runtime "DOTNETCORE|8.0" --src-path bin/Publish || (echo "❌ Azure deployment failed!" && exit 1)
+az webapp deployment source config-zip --resource-group "hourmap_group" --name "hourmap" --src "backend/bin/publish.zip" || (echo "❌ Azure deployment failed!" && exit 1)
 
 echo "✅ Deployment successful at $(date)!"
