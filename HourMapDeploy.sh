@@ -7,13 +7,20 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "Starting Deployment at $(date)"
 
-
 echo "🔑 Logging into Azure..."
 az login --service-principal -u "$AZURE_APP_ID" -p "$AZURE_SECRET" --tenant "$AZURE_TENANT_ID"
 
+# Pull latest code from GitLab
+if [ ! -d ".git" ]; then
+    echo "❌ ERROR: This script must be run from the root of the Git repository."
+    exit 1
+fi
 
-echo "📥 Pulling latest code from GitLab..."
-git clone https://oauth2:$GITLAB_TOKEN@gitlab.com/wgu-gitlab-environment/student-repos/rsnyd81/d424-software-engineering-capstone.git || (echo "❌ Git pull failed!" && exit 1)
+# Check for uncommitted changes and stash them if necessary
+if [ -n "$(git status --porcelain)" ]; then
+    echo "⚠️  WARNING: Uncommitted changes detected. Stashing them..."
+    git stash
+fi
 
 # Build Angular frontend
 echo "Installing Angular dependencies..."
@@ -38,8 +45,6 @@ dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
 cd HourMap/bin/Publish
 zip -r ../publish.zip .  # Create a ZIP of the deployment folder
 cd ../../..
-
-
 
 dotnet publish --configuration Release --output bin/Publish || (echo "❌ .NET Publish Failed!" && exit 1)
 
