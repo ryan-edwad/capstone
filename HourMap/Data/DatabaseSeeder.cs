@@ -85,7 +85,7 @@ namespace HourMap.Data
                 var demoOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "DEMO-rganization");
                 if (demoOrg == null)
                 {
-                    demoOrg = new Organization { Name = "DEMO-organization", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
+                    demoOrg = new Organization { Name = "DEMO-rganization", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
                     context.Organizations.Add(demoOrg);
                     await context.SaveChangesAsync();
                 }
@@ -114,7 +114,9 @@ namespace HourMap.Data
                         LastName = "User",
                         OrganizationId = organizationId,
                         JobTitle = "The Boss",
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        ManagesOrganization = true,
+                        LockoutEnabled = false
                     };
                     await userManager.CreateAsync(manager, "DemoPass@123");
                     await userManager.AddToRoleAsync(manager, "Manager");
@@ -129,7 +131,8 @@ namespace HourMap.Data
                             LastName = "Demo",
                             OrganizationId = organizationId,
                             JobTitle = "A Worker",
-                            EmailConfirmed = true
+                            EmailConfirmed = true,
+                            LockoutEnabled = false
                         };
                         await userManager.CreateAsync(employee, "DemoPass@123");
                         await userManager.AddToRoleAsync(employee, "Employee");
