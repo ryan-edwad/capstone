@@ -55,7 +55,8 @@ cd ../../..
 
 #Deploy to Azure App Service
 echo "🚀 Deploying to Azure..."
-az webapp deploy --resource-group "hourmap_group" --name "hourmap" --src-path "$REPO_DIR/HourMap/bin/Publish" || (echo "❌ Azure deployment failed!" && exit 1)
+az webapp deploy --resource-group "hourmap_group" --name "hourmap" --src-path "$REPO_DIR/HourMap/bin/publish.zip" || (echo "❌ Azure deployment failed!" && exit 1)
+# az webapp deploy --resource-group "hourmap_group" --name "hourmap" --src-path "$REPO_DIR/HourMap/bin/Publish" || (echo "❌ Azure deployment failed!" && exit 1)
 
 
 echo "✅ Deployment successful at $(date)!"
