@@ -77,7 +77,7 @@ namespace HourMap.Data
                 var defaultOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "Default");
                 if (defaultOrg == null)
                 {
-                    defaultOrg = new Organization { Name = "Default", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
+                    defaultOrg = new Organization { Name = "Default", CreatedAt = DateTime.UtcNow };
                     context.Organizations.Add(defaultOrg);
                     await context.SaveChangesAsync();
                 }
@@ -85,12 +85,14 @@ namespace HourMap.Data
                 var demoOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "DEMO-rganization");
                 if (demoOrg == null)
                 {
-                    demoOrg = new Organization { Name = "DEMO-rganization", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
+                    demoOrg = new Organization { Name = "DEMO-rganization", CreatedAt = DateTime.UtcNow };
                     context.Organizations.Add(demoOrg);
                     await context.SaveChangesAsync();
-                }
-                return demoOrg.Id;
 
+                    demoOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "DEMO-rganization");
+                }
+
+                return demoOrg?.Id ?? -1;
             }
             catch (SqlException ex)
             {
