@@ -44,12 +44,14 @@ cd HourMap
 dotnet clean
 dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
 
+# We put this on the wrong line, whoops! 
+dotnet publish --configuration Release --output bin/Publish || (echo "❌ .NET Publish Failed!" && exit 1)
+
 # Zip up the publish folder for deployment
 cd /bin/Publish
 zip -r ../publish.zip .  # Create a ZIP of the deployment folder
 cd ../../..
 
-dotnet publish --configuration Release --output bin/Publish || (echo "❌ .NET Publish Failed!" && exit 1)
 
 #Deploy to Azure App Service
 echo "🚀 Deploying to Azure..."
