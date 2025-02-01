@@ -22,9 +22,9 @@ export class TimeclockComponent implements OnDestroy {
   timeClockService: TimeclockService;
   timeEntries: TimeclockEntry[] = [];
   clockForm: FormGroup;
-  locations: WorkLocation[] = []; // Placeholder for now. TODO: Replace with response from API;
-  projects: Project[] = []; // Placeholder for now. TODO: Replace with response from API;
-  roles = ['Manager', 'Admin', 'Employee']; // Placeholder for now. TODO: Replace with response from API;
+  locations: WorkLocation[] = []; 
+  projects: Project[] = []; 
+  roles = ['Manager', 'Admin', 'Employee']; 
   selectedTimeRange: string = 'today';
   totalDuration: number = 0;
   filteredTimeEntries: TimeclockEntry[] = [];
@@ -202,11 +202,15 @@ export class TimeclockComponent implements OnDestroy {
     const today = new Date();
     const isSecondHalf = today.getDate() > 15; // Assuming bi-monthly pay period
     const startDate = new Date(today.getFullYear(), today.getMonth(), isSecondHalf ? 16 : 1);
-    const endDate = new Date(today.getFullYear(), today.getMonth(), isSecondHalf ? new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate() : 15);
+
+    // Have to account for the full day that the period ends on, not just up until that day starts.
+    const endDate = isSecondHalf
+      ? new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999)
+      : new Date(today.getFullYear(), today.getMonth(), 15, 23, 59, 59, 999);
 
     return {
       startDate: startDate.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString(),
     };
   }
 

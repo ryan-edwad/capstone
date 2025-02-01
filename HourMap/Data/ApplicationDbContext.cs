@@ -19,8 +19,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        // Default organization
-        modelBuilder.Entity<Organization>().HasData(new Organization { Id = 1, Name = "Default" });
 
         // ApplicationUser - Organization relationship (explicit)
         modelBuilder.Entity<ApplicationUser>()

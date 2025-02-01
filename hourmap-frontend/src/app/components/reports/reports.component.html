@@ -1,5 +1,5 @@
 <app-treasure-path-background></app-treasure-path-background>
-<div class="container page-container mt-5">
+<div class="container page-container">
   <h1 class="page-header">Report Management</h1>
   <p class="page-subheader">Pull reports and edit time entries.</p>
   <ul class="nav nav-tabs mt-3">
@@ -62,15 +62,22 @@
           </div>
           <div class="mt-4">
             <button
-              class="btn-custom success"
+              class="btn-custom success me-2"
               (click)="fetchReport()"
               [disabled]="!startDate || !endDate"
             >
               Generate Report
             </button>
+            <button
+              class="btn-custom secondary"
+              [disabled]="payrollReport.length === 0"
+              (click)="exportToCSV()"
+            >
+              Export to CSV
+            </button>
           </div>
         </div>
-        <div style="max-height: 500px; overflow-y: auto">
+        <div style="max-height: 40vh; overflow-y: auto">
           <table class="table table-striped" *ngIf="payrollReport.length > 0">
             <caption>
               List of Users, Hours Worked, and Payrate
@@ -97,14 +104,10 @@
               </tr>
             </tbody>
           </table>
+          <p *ngIf="payrollReport.length === 0 && reportGenerated" class="mt-2">
+            No payroll data found for the selected user and date range.
+          </p>
         </div>
-        <button
-          class="btn-custom secondary"
-          [disabled]="payrollReport.length === 0"
-          (click)="exportToCSV()"
-        >
-          Export to CSV
-        </button>
       </div>
     </div>
     <div class="tab-pane fade" id="time-entries">

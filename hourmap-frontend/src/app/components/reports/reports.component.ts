@@ -20,6 +20,7 @@ export class ReportsComponent {
   payrollReport: PayrollObject[] = [];
   _timeClockService: TimeclockService;
   activeTab: string = 'payroll-report';
+  reportGenerated = false;
 
   constructor(private timeclockService: TimeclockService, private cdr: ChangeDetectorRef) {
     this._timeClockService = timeclockService;
@@ -35,9 +36,11 @@ export class ReportsComponent {
       next: (report) => {
         this.payrollReport = report;
         console.log('Grabbed payroll:', report);
+        this.reportGenerated = true;
       },
       error: (err) => {
         console.error('Failed to grab payroll report', err);
+        this.reportGenerated = false;
       }
     });
 

@@ -30,7 +30,10 @@ export class AddLocationComponent {
   }
 
   submit() {
-    if (this.addLocationForm.invalid) return;
+    if (this.addLocationForm.invalid) {
+      alert('Please fill out all required fields.');
+      return;
+    }
 
     const location = this.addLocationForm.value;
     location.organizationId = this.data.organizationId;

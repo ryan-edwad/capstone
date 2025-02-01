@@ -77,9 +77,9 @@
   </div>
 
   <!-- Results Table -->
-  <div style="max-height: 400px; overflow-y: auto">
+  <div style="max-height: 40vh; overflow-y: auto">
     <table
-      class="table table-striped table-hover mt-4"
+      class="table table-striped table-hover"
       *ngIf="userTimeEntries.length > 0"
     >
       <caption>
@@ -107,14 +107,14 @@
           <td>{{ entry.clockIn | date : "mediumTime" }}</td>
           <td>{{ entry.clockOut | date : "mediumTime" }}</td>
           <td>{{ entry.numDuration | number : "1.2-2" }} hours</td>
-          <td>{{ entry.locationId }}</td>
-          <td>{{ entry.projectId }}</td>
+          <td>{{ entry.locationName }}</td>
+          <td>{{ entry.projectName }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <p *ngIf="userTimeEntries.length === 0 && reportGenerated">
+  <p *ngIf="userTimeEntries.length === 0 && reportGenerated" class="mt-2">
     No time entries found for the selected user and date range.
   </p>
 </div>

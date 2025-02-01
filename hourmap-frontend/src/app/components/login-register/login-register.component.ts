@@ -26,7 +26,7 @@ export class LoginRegisterComponent {
     private accountService: AccountService,
   ) {
     this.authForm = this.fb.group({
-      email: [{ value: '', disabled: false }, [Validators.required, Validators.email]],
+      email: [{ value: '', disabled: this.token != null }, [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: [''], // For use with registration
       firstName: [''], // For use with registration

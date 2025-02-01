@@ -80,7 +80,9 @@ export class UserTimeComponent implements OnInit {
           ...entry,
           clockIn: new Date(entry.clockIn + 'Z').toLocaleString(),
           clockOut: entry.clockOut ? new Date(entry.clockOut + 'Z').toLocaleString() : null,
-          numDuration: this.convertIsoToDecimalHours(entry.duration ?? 'PT0H0M0S')
+          numDuration: this.convertIsoToDecimalHours(entry.duration ?? 'PT0H0M0S'),
+          locationName: this.organization.locations.find(loc => loc.id === entry.locationId)?.name || 'Unknown Location',
+          projectName: this.organization.projects.find(proj => proj.id === entry.projectId)?.name || 'Unknown Project'
         }));
         this.reportGenerated = true;
         console.log('User Time Entries:', this.userTimeEntries);

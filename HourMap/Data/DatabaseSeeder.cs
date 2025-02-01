@@ -1,4 +1,5 @@
-﻿using HourMap.Entities;
+﻿using System.Xml;
+using HourMap.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +22,18 @@ namespace HourMap.Data
                 Console.WriteLine("Database migration completed.");
 
                 await SeedRoles(roleManager);
-                await SeedOrganization(context);
-                await SeedUsers(context, userManager);
-                await SeedProjects(context);
-                await SeedUserProjects(context);
-                await SeedTimeEntries(context);
+
+                int demoOrganizationId = await SeedOrganization(context);
+                if (demoOrganizationId == -1)
+                {
+                    Console.WriteLine("[ERROR] Failed to seed organization. Seeding aborted.");
+                    return;
+                }
+
+                await SeedUsers(context, userManager, demoOrganizationId);
+                await SeedProjects(context, demoOrganizationId);
+                await SeedUserProjects(context, demoOrganizationId);
+                await SeedTimeEntries(context, demoOrganizationId);
 
             }
             catch (SqlException ex)
@@ -37,10 +45,6 @@ namespace HourMap.Data
             {
                 Console.WriteLine($"[ERROR] Unexpected error during seeding: {ex.Message}");
             }
-
-
-
-
         }
 
         private static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
@@ -65,26 +69,38 @@ namespace HourMap.Data
 
         }
 
-        private static async Task SeedOrganization(ApplicationDbContext context)
+        private static async Task<int> SeedOrganization(ApplicationDbContext context)
         {
+
             try
             {
-                if (!context.Organizations.Any())
+                var defaultOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "Default");
+                if (defaultOrg == null)
                 {
-                    context.Organizations.Add(new Organization { Name = "Demo Organization", CreatedAt = DateTime.UtcNow });
+                    defaultOrg = new Organization { Name = "Default", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
+                    context.Organizations.Add(defaultOrg);
                     await context.SaveChangesAsync();
                 }
+
+                var demoOrg = await context.Organizations.FirstOrDefaultAsync(o => o.Name == "DEMO-rganization");
+                if (demoOrg == null)
+                {
+                    demoOrg = new Organization { Name = "DEMO-organization", CreatedAt = DateTime.UtcNow.ToUniversalTime() };
+                    context.Organizations.Add(demoOrg);
+                    await context.SaveChangesAsync();
+                }
+                return demoOrg.Id;
 
             }
             catch (SqlException ex)
             {
                 Console.WriteLine($"[ERROR] Failed to seed organization: {ex.Message}");
+                return -1;
             }
-
 
         }
 
-        private static async Task SeedUsers(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private static async Task SeedUsers(ApplicationDbContext context, UserManager<ApplicationUser> userManager, int organizationId)
         {
             try
             {
@@ -96,7 +112,8 @@ namespace HourMap.Data
                         Email = "manager@demo.com",
                         FirstName = "Manager",
                         LastName = "User",
-                        OrganizationId = 1,
+                        OrganizationId = organizationId,
+                        JobTitle = "The Boss",
                         EmailConfirmed = true
                     };
                     await userManager.CreateAsync(manager, "DemoPass@123");
@@ -110,24 +127,23 @@ namespace HourMap.Data
                             Email = $"employee{i}@demo.com",
                             FirstName = $"Employee{i}",
                             LastName = "Demo",
-                            OrganizationId = 1,
+                            OrganizationId = organizationId,
+                            JobTitle = "A Worker",
                             EmailConfirmed = true
                         };
                         await userManager.CreateAsync(employee, "DemoPass@123");
                         await userManager.AddToRoleAsync(employee, "Employee");
                     }
                 }
-
             }
             catch (SqlException ex)
             {
                 Console.WriteLine($"[ERROR] Failed to seed users: {ex.Message}");
             }
-
-
         }
 
-        private static async Task SeedProjects(ApplicationDbContext context)
+
+        private static async Task SeedProjects(ApplicationDbContext context, int organizationId)
         {
             try
             {
@@ -136,7 +152,7 @@ namespace HourMap.Data
                     var projects = new[] { "Project A", "Project B", "Project C", "Project D" };
                     foreach (var name in projects)
                     {
-                        context.Projects.Add(new Project { Name = name, Description = "Default Project Description", OrganizationId = 1 });
+                        context.Projects.Add(new Project { Name = name, Description = "Default Project Description", OrganizationId = organizationId });
                     }
                     await context.SaveChangesAsync();
                 }
@@ -150,7 +166,7 @@ namespace HourMap.Data
 
         }
 
-        private static async Task SeedUserProjects(ApplicationDbContext context)
+        private static async Task SeedUserProjects(ApplicationDbContext context, int organizationId)
         {
             try
             {
@@ -158,12 +174,14 @@ namespace HourMap.Data
                 {
                     var users = context.Users.ToList();
                     var projects = context.Projects.ToList();
-                    var rand = new Random();
 
                     foreach (var user in users)
                     {
-                        var project = projects[rand.Next(projects.Count)];
-                        context.UserProjects.Add(new UserProject { UserId = user.Id, ProjectId = project.Id, OrganizationId = 1 });
+                        foreach (var project in projects)
+                        {
+                            context.UserProjects.Add(new UserProject { UserId = user.Id, ProjectId = project.Id, OrganizationId = organizationId });
+
+                        }
                     }
                     await context.SaveChangesAsync();
                 }
@@ -177,15 +195,16 @@ namespace HourMap.Data
 
         }
 
-        private static async Task SeedTimeEntries(ApplicationDbContext context)
+        private static async Task SeedTimeEntries(ApplicationDbContext context, int organizationId)
         {
             try
             {
-                context.TimeEntries.RemoveRange(context.TimeEntries); // Clear existing time entries so we can keep it current
+                // Remove time entries for demo organization ONLY
+                context.TimeEntries.RemoveRange(context.TimeEntries.Where(t => t.OrganizationId == organizationId));
                 await context.SaveChangesAsync();
 
-                var users = context.Users.Where(u => u.Email!.StartsWith("employee")).ToList();
-                var projects = context.Projects.ToList();
+                var users = context.Users.Where(u => u.OrganizationId == organizationId).ToList();
+                var projects = context.Projects.Where(p => p.OrganizationId == organizationId).ToList();
                 var today = DateTime.UtcNow;
                 var startPeriod = today.AddDays(-15);
                 var rand = new Random();
@@ -198,15 +217,21 @@ namespace HourMap.Data
                         var clockIn = workDate.Date.AddHours(rand.Next(8, 10));
                         var clockOut = clockIn.AddHours(rand.Next(6, 8));
                         var project = projects[rand.Next(projects.Count)];
+                        var duration = clockOut - clockIn;
+                        var isoDuration = XmlConvert.ToString(duration);
+
 
                         context.TimeEntries.Add(new TimeEntry
                         {
                             UserId = user.Id,
-                            OrganizationId = 1,
+                            OrganizationId = organizationId,
                             ProjectId = project.Id,
                             ClockIn = clockIn,
-                            ClockOut = clockOut
+                            ClockOut = clockOut,
+                            Duration = isoDuration
                         });
+
+
                     }
                 }
                 await context.SaveChangesAsync();
