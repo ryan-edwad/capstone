@@ -1,5 +1,9 @@
 ﻿namespace HourMap.Entities;
 
+
+/// <summary>
+/// Represents a project that users can work on.
+/// </summary>
 public class Project
 {
     public int Id { get; set; }

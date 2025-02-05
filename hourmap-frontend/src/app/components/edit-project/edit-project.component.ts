@@ -4,7 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from '../../_services/organization.service';
 import { Project } from '../../_models/project';
-
+/**
+ * Component for editing a project in an organization.
+ */
 @Component({
   selector: 'app-edit-project',
   standalone: true,
@@ -43,6 +45,7 @@ export class EditProjectComponent {
     if (this.editProjectForm.invalid) return;
 
     const editProject = this.editProjectForm.value;
+    editProject.id = this.project.id
     console.log('Submitting edited project:', editProject);
     this.organizationService.updateProject(editProject).subscribe({
       next: (response) => {

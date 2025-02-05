@@ -2,7 +2,9 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { AccountService } from '../../_services/account.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs';
-
+/**
+ * Navigation bar component
+ */
 @Component({
   selector: 'app-nav',
   standalone: true,

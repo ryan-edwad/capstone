@@ -6,7 +6,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserTimeComponent } from "./user-time/user-time.component";
 import { ProjectTimeComponent } from "./project-time/project-time.component";
 import { TreasurePathBackgroundComponent } from '../treasure-path-background/treasure-path-background.component';
-
+/**
+ * Primary report component, for displaying payroll and holding other report components
+ */
 @Component({
   selector: 'app-reports',
   standalone: true,

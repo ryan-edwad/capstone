@@ -5,7 +5,9 @@ import { OrganizationService } from '../../_services/organization.service';
 import { CommonModule } from '@angular/common';
 import { OrgUser } from '../../_models/org-user';
 import { Project } from '../../_models/project';
-
+/**
+ * Component for editing a user in an organization.
+ */
 @Component({
   selector: 'app-edit-user',
   standalone: true,
@@ -54,7 +56,6 @@ export class EditUserComponent {
     const editUser = { ...this.editUserForm.value, projects: this.assignedProjects };
     console.log('Submitting edited user:', editUser);
 
-    // LOOK HERE NOW!!
     var userId = this.data.user.id;
 
     this.organizationService.updateUser(userId, editUser).subscribe({

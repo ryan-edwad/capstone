@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/edit-project/edit-project.component.css"],
+  "sourcesContent": [".mat-dialog-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  padding: 20px;\n  max-width: 90%; /* Adjust for responsive design */\n  height: auto !important; /* Prevent stretching */\n  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);\n}\n\n.modal-header {\n  padding: 0rem 1rem 0rem 1.5rem;\n}\n\n.modal-body {\n  padding: 0.5rem 1.5rem;\n}\n\n.modal-footer {\n  padding: 0.75rem 1.5rem;\n}\n\n/* Make the checkbox larger */\n.styled-checkbox {\n  width: 24px;\n  height: 24px;\n  accent-color: #007bff;\n  cursor: pointer;\n}\n\n/* For browsers that don't support accent-color */\n.styled-checkbox:checked {\n  background-color: #007bff; /* Primary blue when checked */\n  border-color: #007bff;\n}\n\n/* Align the label with the checkbox */\n.styled-label {\n  margin-left: 8px;\n  margin-top: 6px;\n  font-size: 16px;\n  vertical-align: middle; /* Aligns the text vertically with the checkbox */\n}\n"],
+  "mappings": ";AAAA,CAAC;AACC,WAAS;AACT,mBAAiB;AACjB,eAAa;AACb,WAAS;AACT,aAAW;AACX,UAAQ;AACR,cAAY,IAAI,IAAI,KAAK,KAAK,CAAC,EAAE,CAAC,EAAE,CAAC,EAAE;AACzC;AAEA,CAAC;AACC,WAAS,KAAK,KAAK,KAAK;AAC1B;AAEA,CAAC;AACC,WAAS,OAAO;AAClB;AAEA,CAAC;AACC,WAAS,QAAQ;AACnB;AAGA,CAAC;AACC,SAAO;AACP,UAAQ;AACR,gBAAc;AACd,UAAQ;AACV;AAGA,CARC,eAQe;AACd,oBAAkB;AAClB,gBAAc;AAChB;AAGA,CAAC;AACC,eAAa;AACb,cAAY;AACZ,aAAW;AACX,kBAAgB;AAClB;",
+  "names": []
+}

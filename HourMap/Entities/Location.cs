@@ -1,5 +1,9 @@
 ﻿namespace HourMap.Entities;
 
+
+/// <summary>
+/// Represents a location where work can be done.
+/// </summary>
 public class Location
 {
     public int Id { get; set; }

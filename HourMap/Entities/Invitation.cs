@@ -1,5 +1,8 @@
 ﻿namespace HourMap.Entities;
 
+/// <summary>
+/// Represents an invitation to join an organization.
+/// </summary>
 public class Invitation
 {
     public int Id { get; set; }

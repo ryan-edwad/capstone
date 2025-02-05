@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Location controller for managing locations
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class LocationController : ControllerBase
@@ -19,7 +22,11 @@ public class LocationController : ControllerBase
         _context = context;
     }
 
-    // Create new location
+    /// <summary>
+    /// Create a new location
+    /// </summary>
+    /// <param name="createLocationDto">Representation of a location, including name, address, city, state, and description</param>
+    /// <returns></returns>
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> CreateLocation(CreateLocationDto createLocationDto)
@@ -58,7 +65,11 @@ public class LocationController : ControllerBase
         return CreatedAtAction(nameof(GetLocation), new { id = location.Id }, new { message = "Location created successfully!", newLocationDto });
     }
 
-    // Get individual location by ID
+    /// <summary>
+    /// Get a location by ID
+    /// </summary>
+    /// <param name="id">Id of the location retrieved</param>
+    /// <returns>The created location as a LocationDto</returns>
     [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetLocation(int id)
@@ -78,7 +89,10 @@ public class LocationController : ControllerBase
         return Ok(locationDto);
     }
 
-    // Get all locations for an organization
+    /// <summary>
+    /// Get all locations for the organization
+    /// </summary>
+    /// <returns>A list of LocationDtos from the organization</returns>
     [HttpGet("all-locations")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetLocations()
@@ -103,7 +117,11 @@ public class LocationController : ControllerBase
         return Ok(locationDtos);
     }
 
-    // Update location by ID, admins and ManagesOrganization == true only
+    /// <summary>
+    /// Update a location
+    /// </summary>
+    /// <param name="locationDto">The LocationDto of an existing location</param>
+    /// <returns>The updated location in the form of a LocationDto</returns>
     [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> UpdateLocation(LocationDto locationDto)
@@ -132,7 +150,11 @@ public class LocationController : ControllerBase
         return Ok(new { message = "Location updated successfully!", updatedLocationDto });
     }
 
-    // Delete location by ID, admins and managers who has ManageOrganization == true only
+    /// <summary>
+    /// Delete a location by ID
+    /// </summary>
+    /// <param name="id">The ID of an existing location</param>
+    /// <returns>Action Result (200, 404)</returns>
     [HttpDelete("delete/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> DeleteLocation(int id)

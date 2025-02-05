@@ -1,5 +1,9 @@
 ﻿namespace HourMap.Entities;
 
+
+/// <summary>
+/// Represents a time entry for a user.
+/// </summary>
 public class TimeEntry
 {
     public int Id { get; set; }

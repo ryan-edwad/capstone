@@ -9,6 +9,9 @@ using System.Security.Claims;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Controller for managing Projects
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ProjectController : ControllerBase
@@ -20,6 +23,10 @@ public class ProjectController : ControllerBase
         _dbContext = dbContext;
     }
 
+    /// <summary>
+    /// Get all projects for the user's organization
+    /// </summary>
+    /// <returns>Action result (401, 404, 200). A list of Projects</returns>
     [HttpGet("get-projects")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
@@ -49,6 +56,10 @@ public class ProjectController : ControllerBase
         return Ok(projects);
     }
 
+    /// <summary>
+    /// Get all projects assigned to a user
+    /// </summary>
+    /// <returns>ActionResult (200, 404, 401), a list of Projects</returns>
     [HttpGet("get-projects-by-user")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjectsByUser()
@@ -87,6 +98,11 @@ public class ProjectController : ControllerBase
         return Ok(projects);
     }
 
+    /// <summary>
+    /// Get a project by its ID
+    /// </summary>
+    /// <param name="id">Id of a requested project</param>
+    /// <returns>ActionResult(200, 404, 401), ProjectDto</returns>
     [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<ActionResult<ProjectDto>> GetProject(int id)
@@ -116,6 +132,11 @@ public class ProjectController : ControllerBase
         return Ok(project);
     }
 
+    /// <summary>
+    /// Create a new project
+    /// </summary>
+    /// <param name="createProjectDto">Information about a project (Name, Description)</param>
+    /// <returns>ActionResult(200), new Project's ID and information</returns>
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto createProjectDto)
@@ -139,6 +160,11 @@ public class ProjectController : ControllerBase
         return CreatedAtAction(nameof(GetProject), new { id = project.Id }, newProject);
     }
 
+    /// <summary>
+    /// Update a project
+    /// </summary>
+    /// <param name="projectDto">Existing ProjectDto</param>
+    /// <returns>ActionResult(404, 200) Updated ProjectDto</returns>
     [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<ActionResult<ProjectDto>> UpdateProject(ProjectDto projectDto)
@@ -154,6 +180,11 @@ public class ProjectController : ControllerBase
         return Ok(projectDto);
     }
 
+    /// <summary>
+    /// Delete a project
+    /// </summary>
+    /// <param name="projectDto">Existing project</param>
+    /// <returns>ActionResult(404, 204)</returns>
     [HttpDelete("delete")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<ActionResult> DeleteProject(ProjectDto projectDto)
@@ -166,6 +197,11 @@ public class ProjectController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Get all users assigned to a project
+    /// </summary>
+    /// <param name="id">Id of an existing project</param>
+    /// <returns>ActionResult(200, 404). ApplicationUserDto[]</returns>
     [HttpGet("{id}/assigned-users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<ActionResult<IEnumerable<ApplicationUserDto>>> GetAssignedUsers(int id)
@@ -194,6 +230,12 @@ public class ProjectController : ControllerBase
         return Ok(assignedUsers);
     }
 
+    /// <summary>
+    /// Adds/removes users to a project
+    /// </summary>
+    /// <param name="id">Id of an existing project</param>
+    /// <param name="userIds">User Ids to be assigned to the project</param>
+    /// <returns>ActionResult (200, 401, 404)</returns>
     [HttpPost("{id}/update-users")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> UpdateProjectUsers(int id, List<string> userIds)
@@ -244,6 +286,11 @@ public class ProjectController : ControllerBase
         return Ok(new { message = "Users assigned to project." });
     }
 
+    /// <summary>
+    /// Get all projects assigned to a user (duplicate). Whoops.
+    /// </summary>
+    /// <param name="id">Id of an existing project</param>
+    /// <returns>List of projects assigned to the user</returns>
     [HttpGet("get-projects-by-uid/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjectsByUserId(string id)

@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using HourMap.Data;
+﻿using HourMap.Data;
 using HourMap.Dtos;
 using HourMap.Entities;
 using HourMap.Interfaces;
@@ -9,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Auth Controller is responsible for handling user authentication and authorization.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -24,6 +26,11 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Register a new user.
+    /// </summary>
+    /// <param name="registerUserDto">A DTO representing a minified ApplicationUser object. Including username, email, first and last name. </param>
+    /// <returns>Status code depending on the result (400, 200)</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
     {
@@ -53,7 +60,11 @@ public class AuthController : ControllerBase
         return BadRequest(result.Errors);
 
     }
-
+    /// <summary>
+    /// Register a new user using an invitation token.
+    /// </summary>
+    /// <param name="registerInvitedUserDto">Similar to registerUserDto, includes the OrgId registered to.</param>
+    /// <returns>Status code depending on result (400, 200)</returns>
     [HttpPost("register/invite")]
     public async Task<IActionResult> RegisterInvitedUser(RegisterInvitedUserDto registerInvitedUserDto)
     {
@@ -92,6 +103,11 @@ public class AuthController : ControllerBase
         return BadRequest(result.Errors);
     }
 
+    /// <summary>
+    /// Login a user.
+    /// </summary>
+    /// <param name="loginUserDto">Email/Password</param>
+    /// <returns>Status Code (200, 401), as well as an authResponse with the user's otoken and info.</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginUserDto loginUserDto)
     {
@@ -122,33 +138,6 @@ public class AuthController : ControllerBase
 
         return Ok(authResponse);
 
-    }
-
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken()
-    {
-        var token = Request.Headers["Authorization"];
-        Console.WriteLine("Authorization Header: " + token);
-
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            Console.WriteLine("No User ID in token.");
-            return Unauthorized("Invalid token: User ID not found.");
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-        Console.WriteLine("User: " + user);
-        if (user == null)
-        {
-            Console.WriteLine($"User not found: {userId}");
-            return Unauthorized("Invalid token: User does not exist.");
-        }
-
-        var roles = await _userManager.GetRolesAsync(user);
-        var newToken = _jwtTokenGenerator.GenerateToken(user, roles);
-
-        return Ok(new { token = newToken });
     }
 
 }

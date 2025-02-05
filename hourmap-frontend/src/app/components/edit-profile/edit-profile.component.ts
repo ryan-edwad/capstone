@@ -6,7 +6,9 @@ import { AccountService } from '../../_services/account.service';
 import { OrgUser } from '../../_models/org-user';
 import { CommonModule } from '@angular/common';
 import { TreasurePathBackgroundComponent } from "../treasure-path-background/treasure-path-background.component";
-
+/**
+ * Component for editing a user's profile.
+ */
 @Component({
   selector: 'app-edit-profile',
   standalone: true,

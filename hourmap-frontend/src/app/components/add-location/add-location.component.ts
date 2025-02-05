@@ -3,7 +3,9 @@ import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from '../../_services/organization.service';
-
+/**
+ * Component for adding a new location to an organization.
+ */
 @Component({
   selector: 'app-add-location',
   standalone: true,

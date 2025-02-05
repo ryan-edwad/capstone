@@ -5,7 +5,9 @@ import { BehaviorSubject, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthResponse } from '../_models/auth-response';
 import { RegisterInviteUser } from '../_models/register-invite-user';
-
+/**
+ * Service for user account management and authentication/authorization.
+ */
 @Injectable({
   providedIn: 'root'
 })
@@ -22,6 +24,9 @@ export class AccountService {
     this.loadUserIdFromToken();
   }
 
+  /**
+   * Load the user ID from the token and emit it to the currentUserIdSubject.
+   */
   private loadUserIdFromToken() {
     const tokenData = this.getTokenDecoded();
     const userId = tokenData?.sub || null;
@@ -29,6 +34,11 @@ export class AccountService {
   }
 
 
+  /**
+   * Login the user and save the token to local storage.
+   * @param user the authentication credentials
+   * @returns AuthResponse the response from the server
+   */
   login(user: { email: string, password: string }) {
     return this.http.post<AuthResponse>(`${this.baseUrl}login`, user).subscribe({
       next: (response) => {
@@ -62,6 +72,11 @@ export class AccountService {
     });
   }
 
+  /**
+   * Refresh the token.
+   * @param token the token to be refreshed
+   * @returns new token
+   */
   refreshToken(token: string) {
     if (!token) {
       console.error('No token found for refresh.');
@@ -71,6 +86,11 @@ export class AccountService {
     this.saveToken(token);
   }
 
+  /**
+   * Register a new user.
+   * @param registerUser The information of the user to be registered
+   * @returns Response message from the server
+   */
   register(registerUser: { email: string, password: string, lastName?: string, firstName?: string }) {
     return this.http
       .post<{ message: string }>(this.baseUrl + 'register', registerUser)
@@ -85,6 +105,11 @@ export class AccountService {
       });
   }
 
+  /**
+   * Register as an invited user with a token.
+   * @param registerInviteUser The information of the user to be registered
+   * @returns Response message from the server
+   */
   registerWithToken(registerInviteUser: RegisterInviteUser) {
     const url = `${this.baseUrl}register/invite/`;
     return this.http
@@ -100,26 +125,44 @@ export class AccountService {
       });
   }
 
+  /**
+   * Logout the user and remove the token from local storage.
+   */
   logout() {
     this.removeToken();
     this.currentUserIdSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
 
+  /**
+   * Save the token to local storage.
+   * @param token the token to save
+   */
   private saveToken(token: string) {
     console.log('Saving token:', token);
     localStorage.setItem('authToken', token);
     this.loadUserIdFromToken();
   }
 
+  /**
+   * Remove the token from local storage.
+   */
   private removeToken() {
     localStorage.removeItem('authToken');
   }
 
+  /**
+   * Retrieve the token from local storage.
+   * @returns the token
+   */
   public getToken() {
     return localStorage.getItem('authToken');
   }
 
+  /**
+   * Gets a decoded token for authorization
+   * @returns A parsed token
+   */
   public getTokenDecoded() {
     const token = this.getToken();
     if (!token) {
@@ -138,6 +181,10 @@ export class AccountService {
 
   }
 
+  /**
+   * Check if the user is logged in.
+   * @returns Whether the user is logged in or not
+   */
   public isLoggedIn() {
     const token = this.getToken();
     console.log('Initial Auth State:', token ? true : false); // remove this shit

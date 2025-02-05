@@ -102,11 +102,11 @@
         <input
           class="form-check-input"
           type="checkbox"
-          id="enabledProjectsCheckbox"
+          id="enabledUsersCheckbox"
           [(ngModel)]="showOnlyEnabledUsers"
           (change)="filterUsers()"
         />
-        <label class="form-check-label" for="enabledProjectsCheckbox">
+        <label class="form-check-label" for="enabledUserssCheckbox">
           Show Only Enabled Users
         </label>
       </div>
@@ -351,10 +351,16 @@
           </tbody>
         </table>
       </div>
-      <div *ngIf="organization.projects.length === 0">
+      <div *ngIf="organization.projects.length === 0" class="mt-2">
         <p>No projects yet. Add projects to get started!</p>
       </div>
-      <div *ngIf="filteredProjects?.length === 0">
+      <div
+        *ngIf="
+          organization.projects.length > 0 &&
+          filteredProjects?.length === 0 &&
+          searchProjectsQuery
+        "
+      >
         <p>No projects found. Please adjust your search.</p>
       </div>
     </div>

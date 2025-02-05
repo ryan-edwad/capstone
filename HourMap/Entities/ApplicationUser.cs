@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HourMap.Entities;
 
+/// <summary>
+/// Represents a user in the application, inherits from IdentityUser to provide authentication and authorization features.
+/// </summary>
 public class ApplicationUser : IdentityUser
 {
     public string? FirstName { get; set; }

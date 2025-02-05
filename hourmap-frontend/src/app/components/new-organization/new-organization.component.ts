@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OrganizationService } from '../../_services/organization.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-
+import { AccountService } from '../../_services/account.service';
+/**
+ * New organization component
+ */
 @Component({
   selector: 'app-new-organization',
   standalone: true,
@@ -14,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class NewOrganizationComponent {
   createOrgForm: FormGroup;
+  accountService = inject(AccountService);
 
   constructor(
     private fb: FormBuilder,
@@ -31,7 +35,8 @@ export class NewOrganizationComponent {
     this.orgService.createOrganization({ name }).subscribe({
       next: (response) => {
         console.log('Organization created successfully: ', response);
-        this.router.navigate(['users'])
+        this.accountService.refreshToken(response.token);
+        this.router.navigate(['organization-dashboard'])
       },
       error: (err) => {
         console.error('Failed to create organization:', err);

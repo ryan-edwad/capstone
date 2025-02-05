@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// A controller for managing time entries.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class TimeEntryController : ControllerBase
@@ -21,6 +24,11 @@ public class TimeEntryController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Clocks in a user.
+    /// </summary>
+    /// <param name="clockInDto">Project ID, Location ID (optional)</param>
+    /// <returns>ActionResult (200, 401), TimeEntryDto</returns>
     [HttpPost("clock-in")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> ClockIn([FromBody] ClockInDto clockInDto)
@@ -60,6 +68,11 @@ public class TimeEntryController : ControllerBase
         return Ok(new { message = "Clocked in successfully", timeEntryDto });
     }
 
+    /// <summary>
+    /// Clocks out a user.
+    /// </summary>
+    /// <param name="timeEntryId">Id of an existing time entry</param>
+    /// <returns>ActionResult(200, 404, 401), updated TimeEntry</returns>
     [HttpPut("clock-out/{timeEntryId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> ClockOut(int timeEntryId)
@@ -91,6 +104,11 @@ public class TimeEntryController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Updates a time entry.
+    /// </summary>
+    /// <param name="timeEntry">Existing TimeEntry</param>
+    /// <returns>ActionResult(200, 404, 401), updated TimeEntryDto</returns>
     [HttpPut("update")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> UpdateTimeEntry(TimeEntryDto timeEntry)
@@ -163,6 +181,11 @@ public class TimeEntryController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Deletes a time entry.
+    /// </summary>
+    /// <param name="id">Id of existing time entry</param>
+    /// <returns>ActionResult(404, 200)</returns>
     [HttpDelete("delete/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> DeleteTimeEntry(int id)
@@ -183,6 +206,11 @@ public class TimeEntryController : ControllerBase
 
     }
 
+    /// <summary>
+    /// Gets a single time entry by Id.
+    /// </summary>
+    /// <param name="id">Id of existing time entry</param>
+    /// <returns>A single time entry.</returns>
     [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetSingleTimeEntryById(int id)
@@ -196,6 +224,13 @@ public class TimeEntryController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Gets all time entries for a user within a date range.
+    /// </summary>
+    /// <param name="userId">User Id that time entries are being requested from</param>
+    /// <param name="startDate">Time frame where the time entries start(optional)</param>
+    /// <param name="endDate">Time frame where the time entries end(optional)</param>
+    /// <returns>ActionResult(403, 404, 200) A list of TimeEntryDtos belong to that user and timeframe</returns>
     [HttpGet("get-all/{userId?}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetAllTimeEntriesByUserIdAndDate([FromRoute] string? userId, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
@@ -239,6 +274,10 @@ public class TimeEntryController : ControllerBase
         return Ok(timeEntryDtos);
     }
 
+    /// <summary>
+    /// Gets the most recent time entry for a logged in user
+    /// </summary>
+    /// <returns>ActionResult(404, 401, 200). The most recent entry</returns>
     [HttpGet("recent-entry")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> GetRecentEntry()
@@ -267,6 +306,12 @@ public class TimeEntryController : ControllerBase
         return Ok(timeEntryDto);
     }
 
+    /// <summary>
+    /// Gets all time entries for a currently LOGGED IN USER for a given date range.
+    /// </summary>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <returns>ActionResult(401, 404, 200). List of TimeEntryDtos</returns>
     [HttpGet("get-user-entries-by-dates")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<IActionResult> GetUserEntriesByDates([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -298,6 +343,13 @@ public class TimeEntryController : ControllerBase
         return Ok(timeEntryDtos);
     }
 
+
+    /// <summary>
+    /// Gets payroll report for an organization within a date range.
+    /// </summary>
+    /// <param name="startDate">Start date of given pay period</param>
+    /// <param name="endDate">End date of given pay period</param>
+    /// <returns>ActionResult(400,403, 200) A list of PayrollReportDto's</returns>
     [HttpGet("payroll-report")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> GetPayrollReport(DateTime startDate, DateTime endDate)
@@ -336,6 +388,13 @@ public class TimeEntryController : ControllerBase
         return Ok(payrollData);
     }
 
+    /// <summary>
+    /// Gets all time entries for a user within a date range. This one is another duplicate?? Why do I do this?
+    /// </summary>
+    /// <param name="userId">Specific user ID for time entries</param>
+    /// <param name="startDate">Start date</param>
+    /// <param name="endDate">End end</param>
+    /// <returns>ActionResult(401, 200). TimeEntryDto list.</returns>
     [HttpGet("entries-by-uid-and-dates/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> GetEntriesByUserIdAndDates(string userId, DateTime startDate, DateTime endDate)
@@ -370,6 +429,13 @@ public class TimeEntryController : ControllerBase
         return Ok(timeEntryDtos);
     }
 
+    /// <summary>
+    /// Returns a project report, including users and their hours worked towards a project.
+    /// </summary>
+    /// <param name="projectId">The ID of the project in question.</param>
+    /// <param name="startDate">Start date</param>
+    /// <param name="endDate">End date</param>
+    /// <returns>ActionResult(404, 200, 401) PayrollReportDto list.</returns>
     [HttpGet("project-report/{projectId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> GetProjectReport(int projectId, DateTime startDate, DateTime endDate)

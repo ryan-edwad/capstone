@@ -2,24 +2,38 @@
 using HourMap.Data;
 using HourMap.Dtos;
 using HourMap.Entities;
+using HourMap.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Controller for managing organizations
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class OrganizationController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
-    public OrganizationController(ApplicationDbContext context)
+    private readonly IJwtTokenGenerator _jwtTokenService;
+
+    private readonly UserManager<ApplicationUser> _userManager;
+    public OrganizationController(ApplicationDbContext context, IJwtTokenGenerator jwtTokenService, UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _jwtTokenService = jwtTokenService;
+        _userManager = userManager;
     }
 
-    // Create Organization, authorized by new Manager accounts only, who don't already belong to an organization, and by admins
+    /// <summary>
+    /// Create a new organization, only for those who are not already a manager of an organization
+    /// </summary>
+    /// <param name="createOrganizationDto">Organization info, name and description.</param>
+    /// <returns>ActionResult (200, 400, 404), Newly created organization</returns>
     [HttpPost("create")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager")]
     public async Task<IActionResult> CreateOrganization(CreateOrganizationDto createOrganizationDto)
@@ -28,15 +42,9 @@ public class OrganizationController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized("Invalid user id");
 
-        // Add the user to the organization as a manager
+        // Fetch the user
         var user = await _context.Users.FindAsync(userId);
         if (user == null) return BadRequest(new { message = "User not found", userId });
-
-        // Check if the user is already a manager of an organization and is not an admin
-        var isAdmin = User.IsInRole("Admin");
-
-        // var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.CreatedBy == userId);
-        // if (organization != null || !isAdmin) return BadRequest("User is already a manager of an organization");
 
         // Create a new organization
         var newOrganization = new Organization
@@ -46,30 +54,47 @@ public class OrganizationController : ControllerBase
         await _context.Organizations.AddAsync(newOrganization);
         await _context.SaveChangesAsync();
 
-
+        // Add the user to the organization as a manager
         user.OrganizationId = newOrganization.Id;
         user.ManagesOrganization = true;
 
-        var defaultLocations = new List<Location>{
-            new Location {Name = "Remote", OrganizationId = newOrganization.Id, Description = "Remote work location"},
-            new Location {Name = "Office", OrganizationId = newOrganization.Id, Description = "On-site work location"}
+        // make sure user is in the manager role before the token is generated
+        if (!await _userManager.IsInRoleAsync(user, "Manager"))
+        {
+            await _userManager.AddToRoleAsync(user, "Manager");
+        }
 
+        await _context.SaveChangesAsync();
+
+        // Seed locations for new organization
+        var defaultLocations = new List<Location>{
+            new Location {Name = "Remote",
+                          OrganizationId = newOrganization.Id,
+                          Description = "Remote work location",
+                          Address = "Remote",
+                          City = "",
+                          State = ""},
+            new Location {Name = "Office",
+                          OrganizationId = newOrganization.Id,
+                          Description = "On-site work location",
+                          Address = "Office",
+                          City = "",
+                          State = ""}
         };
         await _context.Locations.AddRangeAsync(defaultLocations);
         await _context.SaveChangesAsync();
 
-        var organizationDto = new OrganizationDto
-        {
-            Id = newOrganization.Id,
-            Name = newOrganization.Name,
-            // CreatedBy = newOrganization.CreatedBy,
-            CreatedAt = newOrganization.CreatedAt.ToLocalTime()
-        };
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenService.GenerateToken(user, roles);
 
-        return CreatedAtAction(nameof(GetOrganization), new { id = newOrganization.Id }, organizationDto);
+        return Ok(new { message = "Created org... refreshing token", token });
     }
 
-    // Get Organization by ID, authorized for Admins, and Managers/Users with the same Organization ID
+    /// <summary>
+    /// Get Organization by ID, authorized for Admins, and Managers/Users with the same Organization ID
+    /// </summary>
+    /// <param name="id">The ID of the organization</param>
+    /// <returns>ActionResult(200, 400, 404), Organization found, including users, projects, locations, invites</returns>
     [HttpGet("get/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager,Admin")]
     public async Task<IActionResult> GetOrganization(int id)
@@ -145,7 +170,12 @@ public class OrganizationController : ControllerBase
         return Ok(organizationDto);
     }
 
-    // Update Organization by ID, authorized by Admins and the manager who created the organization/ManageOrganization == true
+    /// <summary>
+    /// Update Organization by ID, authorized by Admins and the manager who created the organization/ManageOrganization == true
+    /// </summary>
+    /// <param name="id">Id of the Organization being updated</param>
+    /// <param name="name">The new name for the organization</param>
+    /// <returns>ActionResult(200, 404), New OrganizationDto, lazy loaded</returns>
     [HttpPut("update/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> UpdateOrganization(int id, string name)
@@ -176,7 +206,11 @@ public class OrganizationController : ControllerBase
         return Ok(new { message = "Organization updated successfully!", organizationDto });
     }
 
-    // Delete Organization by ID, authorized by Admins and the manager who created the Organization/ManageOrganization == true
+    /// <summary>
+    /// Delete Organization by ID, authorized by Admins and the manager who created the organization/ManageOrganization == true
+    /// </summary>
+    /// <param name="id">Id of the Organization being deleted</param>
+    /// <returns>ActionResult (200, 404)</returns>
     [HttpDelete("delete/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager,Admin")]
     public async Task<IActionResult> DeleteOrganization(int id)
@@ -199,7 +233,10 @@ public class OrganizationController : ControllerBase
         return Ok(new { message = "Organization deleted successfully! :(" });
     }
 
-    // Get all organizations, authorized by admins only
+    /// <summary>
+    ///  Get all organizations, authorized by admins only
+    /// </summary>
+    /// <returns>List of OrganizationDtos</returns>
     [HttpGet("list")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetOrganizations()

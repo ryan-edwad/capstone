@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-
+/**
+ * Component for the fancy clock background.
+ */
 @Component({
   selector: 'app-clock-background',
   standalone: true,

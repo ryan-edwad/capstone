@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Controller for managing invitations.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class InvitationController : ControllerBase
@@ -22,6 +25,11 @@ public class InvitationController : ControllerBase
         _userManager = userManager;
     }
 
+
+    /// <summary>
+    /// Get all invitations for the current user's organization.
+    /// </summary>
+    /// <returns>A list of InvitationDto's</returns>
     [HttpGet("invitations")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> GetInvitations()
@@ -56,6 +64,11 @@ public class InvitationController : ControllerBase
         return Ok(invitations);
     }
 
+    /// <summary>
+    /// Invite a user to the current user's organization.
+    /// </summary>
+    /// <param name="inviteUserDto"></param>
+    /// <returns></returns>
     [HttpPost("invite")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> InviteUser(InviteUserDto inviteUserDto)
@@ -134,7 +147,11 @@ public class InvitationController : ControllerBase
         return Ok(new { registrationLink });
     }
 
-    // TODO cancel/delete an invitation
+    /// <summary>
+    /// Cancel an invitation with a given ID.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("cancel/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> CancelInvitation(int id)

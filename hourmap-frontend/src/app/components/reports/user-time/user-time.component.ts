@@ -71,6 +71,7 @@ export class UserTimeComponent implements OnInit {
 
   }
 
+  // Fetch the time entries for the selected user and date range
   fetchUserTimeEntries() {
     if (this.selectedUserId === null || !this.startDate || !this.endDate) return;
 

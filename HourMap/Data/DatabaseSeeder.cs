@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Data
 {
+    /// <summary>
+    /// A helper class that seeds the database with default data.
+    /// </summary>
     public static class DatabaseSeeder
     {
         public static async Task Seed(IServiceProvider serviceProvider)

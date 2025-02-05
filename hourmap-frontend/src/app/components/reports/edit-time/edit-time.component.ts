@@ -6,7 +6,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { TimeclockService } from '../../../_services/timeclock.service';
 import { TimeclockEntry } from '../../../_models/timeclock-entry';
 import { CommonModule } from '@angular/common';
-
+/**
+ * Edit time component, for editing time entries
+ */
 @Component({
   selector: 'app-edit-time',
   standalone: true,

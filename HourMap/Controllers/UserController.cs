@@ -11,6 +11,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Controllers;
 
+/// <summary>
+/// Controller for managing users in the organization.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
@@ -27,7 +30,11 @@ public class UserController : ControllerBase
         _context = context;
         _jwtTokenService = jwtTokenService;
     }
-    // TODO: Get all users in an organization, only for managers and admins
+
+    /// <summary>
+    /// Get all users in an organization, only for managers and admins
+    /// </summary>
+    /// <returns>ActionResult(200, 404, 401, 400). List of ApplicationUserDto's</returns>
     [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager")]
     public async Task<IActionResult> GetUsers()
@@ -56,7 +63,11 @@ public class UserController : ControllerBase
         return Ok(userDtos);
     }
 
-    // TODO: Get a single user by id, only for managers with the same organization ID and admins
+    /// <summary>
+    /// Get a single user by id, only for managers with the same organization ID and admins
+    /// </summary>
+    /// <param name="id">The id of the user in question</param>
+    /// <returns>ActionResult(401, 400, 404, 200) ApplicationUserDto</returns>
     [HttpGet("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> GetUser(string id)
@@ -85,7 +96,12 @@ public class UserController : ControllerBase
         return Ok(userDto);
     }
 
-    // TODO: Edit a user profile as a manager, all fields enabled managers and admins
+    /// <summary>
+    /// Edit a user profile as a manager, all fields enabled managers and admins
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="userDto">User DTO - first, last, email, job, payrate </param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPut("edit-by-manager/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> EditUserByManager(string id, EditUserByManagerDto userDto)
@@ -111,7 +127,12 @@ public class UserController : ControllerBase
         return Ok(new { message = "User profile updated successfully." });
     }
 
-    // Edit a user profile as the user, some fields not enabled (cannot change pay rate or job title)
+    /// <summary>
+    /// Edit a user profile as the user, some fields not enabled (cannot change pay rate or job title)
+    /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="userDto">EditUserProfileDto, has some fields removed from the EditByManagerDto</param>
+    /// <returns>ActionResult(404,401,200). A new token to refresh the user data immediately.</returns>
     [HttpPut("edit-my-profile/{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Manager,Employee")]
     public async Task<IActionResult> EditMyProfile(string id, EditUserProfileDto userDto)
@@ -135,7 +156,12 @@ public class UserController : ControllerBase
         return Ok(new { message = "User profile updated successfully.", token });
     }
 
-    // Assign a project to a user, only for managers and admins
+    /// <summary>
+    /// Assign a project to a user, only for managers and admins
+    /// </summary>
+    /// <param name="userId">User ID to assignt the project to</param>
+    /// <param name="projectDto">The project to assign to the user</param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPost("assign-project/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> AssignProjectToUser(string userId, ProjectDto projectDto)
@@ -166,7 +192,12 @@ public class UserController : ControllerBase
         return Ok("Project assigned to user successfully.");
     }
 
-    // Remove a project from a user, only for managers and admins
+    /// <summary>
+    /// Remove a project from a user
+    /// </summary>
+    /// <param name="userId">User to remove project from</param>
+    /// <param name="projectId">Project to remove from that user</param>
+    /// <returns>ActionResult(401, 400, 404, 200)</returns>
     [HttpDelete("remove-project/{userId}/{projectId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> RemoveProjectFromUser(string userId, int projectId)
@@ -195,7 +226,11 @@ public class UserController : ControllerBase
         return Ok("Project removed from user successfully.");
     }
 
-    // TODO: Get all projects for a user
+    /// <summary>
+    /// Get all projects for a user
+    /// </summary>
+    /// <param name="userId">User to get projects for</param>
+    /// <returns>ActionResult(401,400,404,200) List of ProjectDtos</returns>
     [HttpGet("projects/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Employee,Manager, Admin")]
     public async Task<IActionResult> GetProjectsForUser(string userId)
@@ -224,7 +259,11 @@ public class UserController : ControllerBase
         return Ok(projectDtos);
     }
 
-    // promote user
+    /// <summary>
+    /// Promote user to manager
+    /// </summary>
+    /// <param name="userId">UserId to promote to manager</param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPost("add-manager-role/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> AddManagerRole(string userId)
@@ -266,7 +305,11 @@ public class UserController : ControllerBase
         return Ok(new { message = "Manager role added to user successfully." });
     }
 
-    // TODO: Remove manager role from a user, only for admins/managers with ManageOrganization == true
+    /// <summary>
+    /// Remove manager role from a user
+    /// </summary>
+    /// <param name="userId">UserId to remove the manager role from</param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPost("remove-manager-role/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> RemoveManagerRole(string userId)
@@ -302,7 +345,11 @@ public class UserController : ControllerBase
         return Ok(new { message = "Manager role removed from user successfully." });
     }
 
-    // Disable sign in for a user, only for admins/managers with ManageOrganization == true
+    /// <summary>
+    /// Disable sign in for a user
+    /// </summary>
+    /// <param name="userId">UserId of the user to be disabled</param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPut("disable-sign-in/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> DisableSignInForUser(string userId)
@@ -329,7 +376,11 @@ public class UserController : ControllerBase
         return Ok(new { message = "User sign in disabled successfully." });
     }
 
-    // Enable sign in for a user, only for admins/managers with ManageOrganization == true
+    /// <summary>
+    /// Enable sign in for a user
+    /// </summary>
+    /// <param name="userId">UserId of the user to be enabled</param>
+    /// <returns>ActionResult(401,400,404,200)</returns>
     [HttpPut("enable-sign-in/{userId}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Manager, Admin")]
     public async Task<IActionResult> EnableSignInForUser(string userId)
@@ -354,7 +405,12 @@ public class UserController : ControllerBase
         return Ok(new { message = "User sign in enabled successfully." });
     }
 
-    // Claims
+    /// <summary>
+    /// Update the claims associated with a user's role
+    /// </summary>
+    /// <param name="user">The user being updated</param>
+    /// <param name="newRole">The new role to add to claims</param>
+    /// <returns>Only returns if the new role is invalid</returns>
     private async Task UpdateRoleClaimsAsync(ApplicationUser user, string newRole)
     {
         if (string.IsNullOrWhiteSpace(newRole))

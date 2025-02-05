@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { ClockBackgroundComponent } from "../clock-background/clock-background.component";
 import { AccountService } from '../../_services/account.service';
 import { Router } from '@angular/router';
-
+/**
+ * Component for the home page.
+ */
 @Component({
   selector: 'app-home-page',
   standalone: true,

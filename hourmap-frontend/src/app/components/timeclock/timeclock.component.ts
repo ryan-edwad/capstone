@@ -9,6 +9,9 @@ import { TimeclockEntry } from '../../_models/timeclock-entry';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TreasurePathBackgroundComponent } from '../treasure-path-background/treasure-path-background.component';
 
+/**
+ * Timeclock component, for clocking in and out, and for users to see recent entries
+ */
 @Component({
   selector: 'app-timeclock',
   standalone: true,
@@ -22,9 +25,9 @@ export class TimeclockComponent implements OnDestroy {
   timeClockService: TimeclockService;
   timeEntries: TimeclockEntry[] = [];
   clockForm: FormGroup;
-  locations: WorkLocation[] = []; 
-  projects: Project[] = []; 
-  roles = ['Manager', 'Admin', 'Employee']; 
+  locations: WorkLocation[] = [];
+  projects: Project[] = [];
+  roles = ['Manager', 'Admin', 'Employee'];
   selectedTimeRange: string = 'today';
   totalDuration: number = 0;
   filteredTimeEntries: TimeclockEntry[] = [];

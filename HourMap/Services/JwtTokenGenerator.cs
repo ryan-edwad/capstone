@@ -7,10 +7,22 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace HourMap.Services;
 
+/// <summary>
+/// Generates a JWT token for a user, implements the interface IJwtTokenGenerator.
+/// </summary>
+/// <param name="configuration">Access to Appsettings.json, env variables, etc.</param>
 public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerator
 {
     private readonly IConfiguration _configuration = configuration;
 
+    /// <summary>
+    /// Generates a JWT token for a user with the given roles.
+    /// </summary>
+    /// <param name="user">The user we're generating a token for</param>
+    /// <param name="roles">The roles we're assigning the user</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
     public string GenerateToken(ApplicationUser user, IList<string> roles)
     {
         if (user is null)

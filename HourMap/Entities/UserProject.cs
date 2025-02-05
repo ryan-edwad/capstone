@@ -1,5 +1,9 @@
 ﻿namespace HourMap.Entities;
 
+
+/// <summary>
+/// Represents a user's association with a project. This is basically a database view.
+/// </summary>
 public class UserProject
 {
     public string UserId { get; set; } = null!;

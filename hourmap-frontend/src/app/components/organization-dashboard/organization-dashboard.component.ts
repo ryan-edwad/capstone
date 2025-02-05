@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AddUserComponent } from '../add-user/add-user.component';
 import { EditUserComponent } from '../edit-user/edit-user.component';
@@ -21,7 +21,9 @@ import { OrganizationDataService } from '../../_services/organization-data.servi
 import { TreasurePathBackgroundComponent } from "../treasure-path-background/treasure-path-background.component";
 import { AccountService } from '../../_services/account.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+/**
+ * Organization dashboard component, where most of everything happens in this app. 
+ */
 @Component({
   selector: 'app-organization-dashboard',
   standalone: true,
@@ -48,7 +50,7 @@ export class OrganizationDashboardComponent {
   sortColumn: string = ''
   sortDirection: 'asc' | 'desc' = 'asc';
 
-  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog, private organizationDataService: OrganizationDataService, private accountService: AccountService) { }
+  constructor(private organizationService: OrganizationService, private router: Router, private dialog: MatDialog, private organizationDataService: OrganizationDataService, private accountService: AccountService, private cdr: ChangeDetectorRef) { }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
@@ -239,6 +241,8 @@ export class OrganizationDashboardComponent {
 
           // Reset the selected invitation
           this.selectedInvitation = null;
+
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to delete invitation: ', err);
@@ -462,6 +466,8 @@ export class OrganizationDashboardComponent {
           );
 
           this.selectedLocation = null;
+
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to delete location: ', err);

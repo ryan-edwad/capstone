@@ -2,6 +2,9 @@
 
 namespace HourMap.Entities;
 
+/// <summary>
+/// Represents an organization that users can belong to.
+/// </summary>
 public class Organization
 {
     public int Id { get; set; }

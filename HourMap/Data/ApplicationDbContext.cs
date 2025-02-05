@@ -4,7 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HourMap.Data;
 
-
+/// <summary>
+/// A helper class that represents the database context for the application.
+/// </summary>
+/// <param name="options">Options to be used by the DbContext</param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)
 {
     public DbSet<Organization> Organizations { get; set; } = null!;
@@ -15,6 +18,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<UserProject> UserProjects { get; set; } = null!;
 
 
+    /// <summary>
+    /// Configures the relationships between the entities in the database.
+    /// </summary>
+    /// <param name="modelBuilder">=See: https://learn.microsoft.com/en-us/ef/core/modeling/</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

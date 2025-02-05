@@ -6,7 +6,9 @@ import { TimeclockService } from '../../../_services/timeclock.service';
 import { Organization } from '../../../_models/organization';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
-
+/**
+ * Component for generating a report of time spent on a project by users
+ */
 @Component({
   selector: 'app-project-time',
   standalone: true,

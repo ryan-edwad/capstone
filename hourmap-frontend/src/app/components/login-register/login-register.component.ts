@@ -6,7 +6,9 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AccountService } from '../../_services/account.service';
 import { RegisterInviteUser } from '../../_models/register-invite-user';
 import { ClockBackgroundComponent } from '../clock-background/clock-background.component';
-
+/**
+ * Component for logging in or registering a new user.
+ */
 @Component({
   selector: 'app-login-register',
   standalone: true,
@@ -96,7 +98,10 @@ export class LoginRegisterComponent {
         token: this.token
       };
 
-      this.accountService.registerWithToken(registerInviteUser);
+      var result = this.accountService.registerWithToken(registerInviteUser);
+      if (result) {
+        alert('Welcome to the team! Login to continue.');
+      }
     }
     else if (this.isLoginMode) {
       const { email } = this.authForm.value;
@@ -108,7 +113,11 @@ export class LoginRegisterComponent {
         return;
       }
       const { email } = this.authForm.value;
-      this.accountService.register({ email, password, firstName, lastName });
+      var result = this.accountService.register({ email, password, firstName, lastName });
+      if (result) {
+        alert('Registration successful! Login to continue.');
+      }
+
     }
 
 

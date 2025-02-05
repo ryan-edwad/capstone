@@ -5,6 +5,9 @@ import { OrgUser } from '../../_models/org-user';
 import { OrganizationService } from '../../_services/organization.service';
 import { Project } from '../../_models/project';
 
+/**
+ * Component for assigning users to a project.
+ */
 @Component({
   selector: 'app-assign-project',
   standalone: true,

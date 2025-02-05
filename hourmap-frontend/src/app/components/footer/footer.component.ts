@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-
+/**
+ * Just a footer!
+ */
 @Component({
   selector: 'app-footer',
   standalone: true,

@@ -4,7 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { OrganizationService } from '../../_services/organization.service';
 import { WorkLocation } from '../../_models/work-location';
-
+/**
+ * Component for editing a location in an organization.
+ */
 @Component({
   selector: 'app-edit-location',
   standalone: true,

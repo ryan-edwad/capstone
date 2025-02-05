@@ -4,7 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { OrganizationService } from '../../_services/organization.service';
 import { CommonModule } from '@angular/common';
 import { CreateProject } from '../../_models/create-project';
-
+/**
+ * New project component for creating new projects
+ */
 @Component({
   selector: 'app-new-project',
   standalone: true,
@@ -39,8 +41,7 @@ export class NewProjectComponent {
     this.organizationService.addProject(project).subscribe({
       next: (response) => {
         console.log('Response from API:', response);
-        this.dialogRef.close();
-        return true;
+        this.dialogRef.close(true);
       },
       error: (err) => {
         console.error('Failed to create project:', err);
@@ -55,8 +56,7 @@ export class NewProjectComponent {
   }
 
   close() {
-    this.dialogRef.close();
-    return false;
+    this.dialogRef.close(false);
   }
 
 }

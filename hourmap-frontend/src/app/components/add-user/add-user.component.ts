@@ -4,6 +4,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { OrganizationService } from '../../_services/organization.service';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Component for adding a new user to an organization.
+ */
 @Component({
   selector: 'app-add-user',
   standalone: true,
