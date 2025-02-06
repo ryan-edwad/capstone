@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/components/treasure-path-background/treasure-path-background.component.css"],
+  "sourcesContent": [".treasure-map {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 0;\n  pointer-events: none;\n  opacity: 0.4;\n  object-fit: contain;\n}\n\n.treasure-path {\n  fill: none;\n  stroke: #f25c54;\n  stroke-width: 6;\n  stroke-dasharray: 10, 10;\n}\n\n.x-marker {\n  font-family: \"Arial\", sans-serif;\n  font-size: 32px;\n  font-weight: bold;\n  fill: #f25c54;\n}\n"],
+  "mappings": ";AAAA,CAAC;AACC,YAAU;AACV,OAAK;AACL,QAAM;AACN,SAAO;AACP,UAAQ;AACR,WAAS;AACT,kBAAgB;AAChB,WAAS;AACT,cAAY;AACd;AAEA,CAAC;AACC,QAAM;AACN,UAAQ;AACR,gBAAc;AACd,oBAAkB,EAAE,EAAE;AACxB;AAEA,CAAC;AACC,eAAa,OAAO,EAAE;AACtB,aAAW;AACX,eAAa;AACb,QAAM;AACR;",
+  "names": []
+}

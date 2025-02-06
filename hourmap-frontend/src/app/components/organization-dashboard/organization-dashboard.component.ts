@@ -466,8 +466,8 @@ export class OrganizationDashboardComponent {
           );
 
           this.selectedLocation = null;
-
-          this.cdr.detectChanges();
+          this.organizationDataService.clearCache(this.organization.id);
+          this.refreshOrganization();
         },
         error: (err) => {
           console.error('Failed to delete location: ', err);
