@@ -7,6 +7,7 @@ import { AuthResponse } from '../_models/auth-response';
 import { RegisterInviteUser } from '../_models/register-invite-user';
 /**
  * Service for user account management and authentication/authorization.
+ * B. A database component! 
  */
 @Injectable({
   providedIn: 'root'

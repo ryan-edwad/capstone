@@ -9,6 +9,7 @@ namespace HourMap.Services;
 
 /// <summary>
 /// Generates a JWT token for a user, implements the interface IJwtTokenGenerator.
+/// B. Industry appropriate security features
 /// </summary>
 /// <param name="configuration">Access to Appsettings.json, env variables, etc.</param>
 public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerator

@@ -38,13 +38,24 @@ public class TimeEntryController : ControllerBase
         var organizationId = User.FindFirstValue("OrganizationId");
         if (organizationId is null) return Unauthorized("Invalid organization id");
 
+        if (string.IsNullOrEmpty(organizationId))
+        {
+            return Unauthorized("Invalid organization id. OrganizationId claim is missing or empty.");
+        }
+
+        if (!int.TryParse(organizationId, out int parsedOrganizationId))
+        {
+            return BadRequest("Organization ID is not in a valid format.");
+        }
+
+
         var timeEntry = new TimeEntry
         {
             UserId = userId,
             ClockIn = DateTime.UtcNow,
             ProjectId = clockInDto.ProjectId,
             LocationId = clockInDto.LocationId,
-            OrganizationId = int.Parse(organizationId)
+            OrganizationId = parsedOrganizationId
         };
         var result = await _context.TimeEntries.AddAsync(timeEntry);
         if (result == null)
@@ -144,6 +155,7 @@ public class TimeEntryController : ControllerBase
             timeChanged = true;
         }
 
+        // B. VALIDATION!
         if (timeChanged)
         {
             var duration = result.ClockOut - result.ClockIn;

@@ -1,5 +1,9 @@
 ﻿namespace HourMap.Dtos;
 
+/**
+ * Data transfer object for the ApplicationUser entity.
+ * B. ENCAPSULATION - we avoid exposing the ApplicationUser entity directly to the client.
+ */
 public class ApplicationUserDto
 {
     public required string Id { get; set; }

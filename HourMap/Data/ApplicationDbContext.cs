@@ -6,6 +6,7 @@ namespace HourMap.Data;
 
 /// <summary>
 /// A helper class that represents the database context for the application.
+/// B. The Database Component!
 /// </summary>
 /// <param name="options">Options to be used by the DbContext</param>
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<ApplicationUser>(options)

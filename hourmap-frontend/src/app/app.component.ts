@@ -4,6 +4,7 @@ import { NavComponent } from "./components/nav/nav.component";
 import { FooterComponent } from "./components/footer/footer.component";
 import { NgxSpinnerComponent } from 'ngx-spinner';
 
+// B. USER FRIENDLY, FUNCTIONAL GUI
 @Component({
   selector: 'app-root',
   standalone: true,

@@ -10,6 +10,7 @@ namespace HourMap.Controllers;
 
 /// <summary>
 /// Auth Controller is responsible for handling user authentication and authorization.
+/// B. INHERITANCE
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -34,13 +35,14 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterUserDto registerUserDto)
     {
-
+        /// B. VALIDATION FUNCTIONALITY
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             Console.WriteLine("Validation Errors: " + string.Join(", ", errors));
             return BadRequest(ModelState);
         }
+
 
         var user = new ApplicationUser
         {
@@ -50,6 +52,7 @@ public class AuthController : ControllerBase
             LastName = registerUserDto.LastName
         };
 
+        
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (result.Succeeded)
         {
