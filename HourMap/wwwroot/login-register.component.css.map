@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/login-register/login-register.component.css"],
-  "sourcesContent": [".login-container {\n  position: relative;\n  z-index: 1;\n  background: rgba(255, 255, 255, 0.85);\n  padding: 2rem;\n  border-radius: 8px;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}\n.custom-login-container {\n  height: calc(100vh - 100px);\n  padding-top: 80px;\n  margin-top: -110px;\n}\n"],
-  "mappings": ";AAAA,CAAC;AACC,YAAU;AACV,WAAS;AACT,cAAY,KAAK,GAAG,EAAE,GAAG,EAAE,GAAG,EAAE;AAChC,WAAS;AACT,iBAAe;AACf,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAE,CAAC,EAAE,CAAC,EAAE;AACtC;AACA,CAAC;AACC,UAAQ,KAAK,MAAM,EAAE;AACrB,eAAa;AACb,cAAY;AACd;",
-  "names": []
-}

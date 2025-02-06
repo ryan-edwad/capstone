@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/footer/footer.component.css"],
-  "sourcesContent": [".custom-footer {\n  font-size: 1rem;\n  font-weight: bold;\n  background-color: #f25c54;\n  z-index: 1;\n}\n\n.custom-footer .nav-link {\n  color: white;\n  opacity: 0.8;\n  transition: opacity 0.2s ease;\n}\n\n.custom-footer .nav-link:hover {\n  color: white;\n  opacity: 1;\n}\n\n.custom-footer {\n  color: white;\n  opacity: 1;\n}\n\n.navbar-compass-clock {\n  fill: none;\n  stroke: #fff;\n  stroke-width: 2;\n}\n\n.navbar-map-circle {\n  stroke: #fff;\n  stroke-width: 3;\n}\n\n.navbar-compass {\n  font-size: 20px;\n  fill: #fff;\n}\n"],
-  "mappings": ";AAAA,CAAC;AACC,aAAW;AACX,eAAa;AACb,oBAAkB;AAClB,WAAS;AACX;AAEA,CAPC,cAOc,CAAC;AACd,SAAO;AACP,WAAS;AACT,cAAY,QAAQ,KAAK;AAC3B;AAEA,CAbC,cAac,CANC,QAMQ;AACtB,SAAO;AACP,WAAS;AACX;AAEA,CAlBC;AAmBC,SAAO;AACP,WAAS;AACX;AAEA,CAAC;AACC,QAAM;AACN,UAAQ;AACR,gBAAc;AAChB;AAEA,CAAC;AACC,UAAQ;AACR,gBAAc;AAChB;AAEA,CAAC;AACC,aAAW;AACX,QAAM;AACR;",
-  "names": []
-}

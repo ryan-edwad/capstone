@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/reports/user-time/user-time.component.css"],
-  "sourcesContent": ["/* Ensure the dropdown does not overflow or affect layout */\n.list-group {\n  position: absolute;\n  max-height: 150px;\n  overflow-y: auto;\n  z-index: 10;\n}\n\n.container .form-label {\n  font-weight: bold;\n  font-size: 14px;\n}\n"],
-  "mappings": ";AACA,CAAC;AACC,YAAU;AACV,cAAY;AACZ,cAAY;AACZ,WAAS;AACX;AAEA,CAAC,UAAU,CAAC;AACV,eAAa;AACb,aAAW;AACb;",
-  "names": []
-}

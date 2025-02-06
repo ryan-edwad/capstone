@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/organization-dashboard/organization-dashboard.component.css"],
-  "sourcesContent": [".text-success {\n  color: green;\n  font-weight: bold; /* Optional: Make it bold */\n}\n\n.text-danger {\n  color: red;\n  font-weight: bold; /* Optional: Make it bold */\n}\n\n.sortable {\n  cursor: pointer;\n  user-select: none;\n}\n\n.sortable:hover {\n  text-decoration: underline;\n}\n\n.bi {\n  margin-left: 5px;\n}\n"],
-  "mappings": ";AAAA,CAAC;AACC,SAAO;AACP,eAAa;AACf;AAEA,CAAC;AACC,SAAO;AACP,eAAa;AACf;AAEA,CAAC;AACC,UAAQ;AACR,uBAAa;AAAb,eAAa;AACf;AAEA,CALC,QAKQ;AACP,mBAAiB;AACnB;AAEA,CAAC;AACC,eAAa;AACf;",
-  "names": []
-}

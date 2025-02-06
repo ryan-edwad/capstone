@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/home-page/home-page.component.css"],
-  "sourcesContent": [".card-title {\n  font-weight: bold;\n}\n\n.card-text {\n  color: #6c757d;\n}\n\n.container.bg-dark-hero {\n  z-index: 1;\n}\n\n.bold {\n  font-weight: bold;\n}\n\n.bg-dark-hero {\n  background-color: #423e3b;\n  color: white;\n  padding: 5rem;\n}\n\n.bg-dark-hero h1 {\n  color: white;\n}\n\n.bg-dark-hero p {\n  color: #9cafb7;\n  font-weight: bold;\n}\n"],
-  "mappings": ";AAAA,CAAC;AACC,eAAa;AACf;AAEA,CAAC;AACC,SAAO;AACT;AAEA,CAAC,SAAS,CAAC;AACT,WAAS;AACX;AAEA,CAAC;AACC,eAAa;AACf;AAEA,CARW;AAST,oBAAkB;AAClB,SAAO;AACP,WAAS;AACX;AAEA,CAdW,aAcG;AACZ,SAAO;AACT;AAEA,CAlBW,aAkBG;AACZ,SAAO;AACP,eAAa;AACf;",
-  "names": []
-}

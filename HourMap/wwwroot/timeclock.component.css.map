@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/components/timeclock/timeclock.component.css"],
-  "sourcesContent": [".live-clock {\n  font-size: 2rem;\n  font-weight: bold;\n}\n\n.live-date {\n  font-size: 1.2rem;\n  color: #555;\n}\n\n.table-header,\n.form-header {\n  margin-bottom: 1rem;\n  color: #007bff;\n}\n\n.timeclock-container {\n  margin-top: 2rem;\n}\n\n@media (max-width: 768px) {\n  .live-clock {\n    text-align: center;\n  }\n\n  .live-date {\n    text-align: center;\n  }\n}\n\n.incomplete {\n  background-color: #ffe4e1; /* Light red for incomplete entries */\n}\n.total-duration {\n  margin-left: auto; /* Pushes this div to the right */\n  font-size: 1rem; /* Adjust size as needed */\n  white-space: nowrap; /* Prevents wrapping */\n}\n"],
-  "mappings": ";AAAA,CAAC;AACC,aAAW;AACX,eAAa;AACf;AAEA,CAAC;AACC,aAAW;AACX,SAAO;AACT;AAEA,CAAC;AACD,CAAC;AACC,iBAAe;AACf,SAAO;AACT;AAEA,CAAC;AACC,cAAY;AACd;AAEA,OAAO,CAAC,SAAS,EAAE;AACjB,GArBD;AAsBG,gBAAY;AACd;AAEA,GApBD;AAqBG,gBAAY;AACd;AACF;AAEA,CAAC;AACC,oBAAkB;AACpB;AACA,CAAC;AACC,eAAa;AACb,aAAW;AACX,eAAa;AACf;",
-  "names": []
-}
