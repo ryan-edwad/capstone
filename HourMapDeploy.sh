@@ -34,12 +34,12 @@ ng build --configuration=production || (echo "❌ Angular build failed!" && exit
 cd ..
 
 # Move Angular build to ASP.NET wwwroot (shouldn't be necessary)
-# echo "📂 Moving frontend to backend..."
+# echo " Moving frontend to backend..."
 # rm -rf backend/wwwroot/*
 # cp -r frontend/dist/frontend/* backend/wwwroot/ || (echo "❌ Failed to copy Angular build!" && exit 1)
 
 # Build and publish .NET backend
-echo "Building .NET Core backend..."
+echo "Building ASP.NET backend..."
 cd HourMap
 dotnet clean
 dotnet build || (echo "❌ .NET Build Failed!" && exit 1)
