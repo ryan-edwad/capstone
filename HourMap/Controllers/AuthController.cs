@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
             LastName = registerUserDto.LastName
         };
 
-        
+
         var result = await _userManager.CreateAsync(user, registerUserDto.Password);
         if (result.Succeeded)
         {
@@ -122,6 +122,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Invalid username or password" });
         }
 
+        //if lock out has value  and user is locked out return unauthorized
         if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
         {
             return Unauthorized(new { message = "User is locked out. Please contact your administrator." });
